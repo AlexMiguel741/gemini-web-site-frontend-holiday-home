@@ -19,6 +19,8 @@ export interface SiteConfig {
   whatsapp: string;
   email: string;
   locationLabel: LocalizedString;
+  // Added to resolve type error when defining SITE_CONFIG and accessing it in App.tsx
+  homeMapEmbedUrl: string;
 }
 
 export interface HeroContent {
