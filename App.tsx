@@ -24,6 +24,7 @@ const SmartImage: React.FC<{ src?: string; alt: string; className?: string }> = 
       alt={alt} 
       className={className}
       onError={() => setHasError(true)}
+      loading="lazy"
     />
   );
 };
@@ -57,7 +58,7 @@ const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> =
   };
 
   return (
-    <div className="bg-white border border-slate-100 rounded-3xl p-6 sm:p-10 shadow-sm w-full">
+    <div className="bg-white border border-slate-100 rounded-3xl p-6 sm:p-10 shadow-sm w-full overflow-hidden">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
           <h4 className="font-bold text-slate-900 text-2xl capitalize">{monthName} {year}</h4>
@@ -142,7 +143,7 @@ const App: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-white overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-white overflow-x-hidden relative">
       <header className="sticky top-0 z-[100] bg-white/95 backdrop-blur-xl border-b border-slate-100 h-20 sm:h-28 flex items-center">
         <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
           <div onClick={() => navigateTo('home')} className="cursor-pointer group flex items-center">
@@ -172,7 +173,7 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full relative">
         {view === 'home' && (
           <div className="animate-in fade-in duration-700">
             <section className="relative py-20 sm:py-32 px-6 lake-gradient text-center">
@@ -206,7 +207,7 @@ const App: React.FC = () => {
                       title="Laveno Map"
                       src={SITE_CONFIG.homeMapEmbedUrl} 
                       className="w-full h-full grayscale-[0.3] contrast-[1.1]" 
-                      style={{ border: 0 }} 
+                      style={{ border: 0, minHeight: '400px' }} 
                       allowFullScreen={true} 
                       loading="lazy"
                     ></iframe>
@@ -228,22 +229,24 @@ const App: React.FC = () => {
         )}
 
         {view === 'property' && selectedApartment && (
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 bg-white pb-20">
-            <section className="px-6 py-6 sm:py-10 bg-slate-50">
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 bg-white pb-20 w-full overflow-hidden">
+            <section className="px-6 py-6 sm:py-10 bg-slate-50 w-full">
               <div className="max-w-7xl mx-auto">
                 <button onClick={() => navigateTo('home', undefined, 'stays')} className="flex items-center gap-2 text-slate-400 hover:text-slate-900 font-bold uppercase text-[10px] tracking-widest mb-6 transition-colors">
                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth={2.5}/></svg>
                    {UI_LABELS.back[lang]}
                 </button>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                  <div className="aspect-[4/3] sm:aspect-auto sm:h-[60vh] overflow-hidden rounded-3xl shadow-xl">
-                    <SmartImage src={selectedApartment.images[0]} alt={selectedApartment.name[lang]} className="w-full h-full object-cover" />
+                
+                {/* Responsive Image Grid without fixed heights to avoid collapse */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
+                  <div className="md:col-span-8 overflow-hidden rounded-3xl shadow-xl aspect-video md:aspect-auto">
+                    <SmartImage src={selectedApartment.images[0]} alt={selectedApartment.name[lang]} className="w-full h-full object-cover min-h-[300px]" />
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-1 md:grid-rows-2 gap-4 sm:gap-6 sm:h-[60vh]">
-                    <div className="aspect-square sm:aspect-auto overflow-hidden rounded-3xl shadow-lg">
+                  <div className="md:col-span-4 grid grid-cols-2 md:grid-cols-1 gap-4 sm:gap-6">
+                    <div className="aspect-square overflow-hidden rounded-3xl shadow-lg">
                       <SmartImage src={selectedApartment.images[1]} alt="" className="w-full h-full object-cover" />
                     </div>
-                    <div className="aspect-square sm:aspect-auto overflow-hidden rounded-3xl shadow-lg">
+                    <div className="aspect-square overflow-hidden rounded-3xl shadow-lg">
                       <SmartImage src={selectedApartment.images[2]} alt="" className="w-full h-full object-cover" />
                     </div>
                   </div>
@@ -266,7 +269,7 @@ const App: React.FC = () => {
 
                 <div className="prose prose-lg text-slate-600 max-w-none">
                    <h3 className="text-slate-900 font-bold text-2xl mb-4">{UI_LABELS.experience_title[lang]}</h3>
-                   <p className="leading-relaxed">{selectedApartment.description[lang]}</p>
+                   <p className="leading-relaxed whitespace-pre-line">{selectedApartment.description[lang]}</p>
                 </div>
 
                 <div className="space-y-6">
@@ -288,15 +291,22 @@ const App: React.FC = () => {
 
                 <div className="space-y-6">
                    <h3 className="text-slate-900 font-bold text-2xl">{UI_LABELS.neighborhood_title[lang]}</h3>
-                   <div className="rounded-3xl overflow-hidden border-8 border-slate-50 shadow-inner aspect-video min-h-[300px]">
-                      <iframe 
-                        title="Apartment Location"
-                        src={selectedApartment.googleMapsEmbedUrl} 
-                        className="w-full h-full" 
-                        style={{ border: 0 }} 
-                        allowFullScreen={true} 
-                        loading="lazy"
-                      ></iframe>
+                   {/* Explicit height and block display for Google Maps container */}
+                   <div className="rounded-3xl overflow-hidden border-8 border-slate-50 shadow-inner w-full bg-slate-100 block" style={{ minHeight: '400px', height: 'auto', position: 'relative' }}>
+                      {selectedApartment.googleMapsEmbedUrl ? (
+                        <iframe 
+                          title={`Location of ${selectedApartment.name[lang]}`}
+                          src={selectedApartment.googleMapsEmbedUrl} 
+                          className="w-full h-full border-0" 
+                          style={{ minHeight: '400px', width: '100%', display: 'block' }}
+                          allowFullScreen={true} 
+                          loading="lazy"
+                        ></iframe>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center p-10 text-slate-400 font-bold uppercase text-xs tracking-widest text-center">
+                          Map not configured for this residence
+                        </div>
+                      )}
                    </div>
                 </div>
               </div>
@@ -309,6 +319,7 @@ const App: React.FC = () => {
                     <div className="inline-block bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border border-blue-500/20">{UI_LABELS.best_rate[lang]}</div>
                   </div>
                   <p className="text-xs opacity-60 leading-relaxed">{UI_LABELS.save_msg[lang]}</p>
+                  
                   <div className="space-y-4 pt-4 border-t border-white/10">
                     <div className="flex items-center gap-3 text-xs opacity-80 font-medium">
                        <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
@@ -319,6 +330,7 @@ const App: React.FC = () => {
                        {UI_LABELS.concierge_service[lang]}
                     </div>
                   </div>
+
                   <a 
                     href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=Interessato alla casa: ${selectedApartment.name[lang]}`} 
                     target="_blank" 
@@ -327,8 +339,9 @@ const App: React.FC = () => {
                   >
                     {UI_LABELS.cta_btn[lang]}
                   </a>
+
                   <div className="flex items-center gap-4 pt-4">
-                     <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-bold text-xl">{SITE_CONFIG.hostName.charAt(0)}</div>
+                     <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-bold text-xl border border-white/5">{SITE_CONFIG.hostName.charAt(0)}</div>
                      <div>
                         <p className="text-xs font-bold leading-none mb-1">{SITE_CONFIG.hostName} {UI_LABELS.host_online[lang]}</p>
                         <p className="text-[10px] opacity-40 font-bold uppercase tracking-widest">{UI_LABELS.host_status[lang]}</p>
@@ -354,7 +367,7 @@ const App: React.FC = () => {
         )}
       </main>
 
-      <footer className="py-20 border-t border-slate-50 bg-[#fdfdfd]">
+      <footer className="py-20 border-t border-slate-50 bg-[#fdfdfd] shrink-0">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center">
           <p className="text-2xl font-bold tracking-tighter mb-4 text-slate-900">{SITE_CONFIG.name}</p>
           <div className="flex gap-8 mb-10 text-[10px] font-bold uppercase tracking-widest text-slate-400">
@@ -368,7 +381,6 @@ const App: React.FC = () => {
         </div>
       </footer>
 
-      {/* Il Chatbot viene reso a livello root per evitare problemi di stacking context */}
       <AIChatConcierge lang={lang} />
     </div>
   );
