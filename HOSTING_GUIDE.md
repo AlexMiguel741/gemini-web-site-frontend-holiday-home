@@ -1,43 +1,58 @@
 
-# Laveno Shores Hosting Guide
+# 🏨 Professional Setup & Hosting Guide
 
-Your website is designed to be lightweight and professional. Here is how to take it live and add your own photos.
+Welcome! Your website is built to act like a luxury hotel booking site, but with the personal touch of a private host. Follow these steps to complete your setup.
 
-## 1. Adding Your Own Images
-To make the website yours, follow this structure in your main project folder:
+---
 
-```
-/index.html
-/images/
-  /vista-lago/
-    - 1.jpg
-    - 2.jpg
-  /borghetto/
-    - 1.jpg
-  /cableway/
-    - 1.jpg
-  /garden/
-    - 1.jpg
-```
+## 1. Customize Your Apartment Data (`constants.tsx`)
+Open the `constants.tsx` file. This is your "Control Center." For each apartment, update these fields:
 
-**Note:** If you don't add these images, the website will automatically show beautiful placeholder photos from Lake Maggiore so it never looks broken.
+- **`price`**: e.g., "From €125/night".
+- **`icalUrl`**: Go to your Airbnb or Booking.com calendar settings, find "Export Calendar," and copy the link ending in `.ics`. Paste it here.
+- **`googleMapsEmbedUrl`**:
+  1. Go to [Google Maps](https://www.google.com/maps).
+  2. Search for your apartment's exact address.
+  3. Click **Share** > **Embed a map**.
+  4. Copy the `src` attribute (the link inside the quotes) and paste it into the `googleMapsEmbedUrl` field.
 
-## 2. Hosting for Free
-The easiest ways to put this website online are:
+---
 
-### Option A: Netlify (Easiest)
-1. Go to [Netlify](https://www.netlify.com/).
-2. Drag and drop your entire project folder (including your new `images` folder) onto their "Drop here" area.
-3. Your site is live instantly with a free URL.
+## 2. Update Your Contact Links (`App.tsx`)
+Search for these terms in `App.tsx` and replace them with your real details:
+- **`wa.me/393331234567`**: Replace `393331234567` with your country code + phone number for WhatsApp.
+- **`mailto:elena@lavenoshores.com`**: Replace with your business email address.
 
-### Option B: GitHub Pages
-1. Upload your files to a GitHub repository.
-2. Go to **Settings > Pages**.
-3. Select the `main` branch and click **Save**.
+---
 
-## 3. Customizing Contacts
-Open `App.tsx` and search for:
-- `mailto:elena@lavenoshores.com` -> Change to your email.
-- `https://wa.me/393331234567` -> Change to your phone number.
+## 3. Replace the Images
+Your site uses professional Unsplash placeholders. To use your own photos:
+1. Upload your photos to a folder called `images/` in your project.
+2. Update the `images` array in `constants.tsx` with paths like `./images/apartment1/living-room.jpg`.
 
-Enjoy your new professional rental business!
+---
+
+## 4. Setting up the "Elena" AI Concierge
+The AI assistant (Elena) uses Google Gemini. To make it work:
+1. Ensure your `API_KEY` is provided in the environment.
+2. The AI already "knows" everything in your `constants.tsx` file, so it will answer guest questions about prices, amenities, and location automatically.
+
+---
+
+## 5. How to Deploy (Make it Public)
+### Option A: Netlify (Fastest)
+1. Create a free account at [Netlify](https://www.netlify.com/).
+2. Drag and drop your project folder onto their dashboard.
+3. Your site is live! You can then connect a custom domain (like `www.lavenoshores.com`).
+
+### Option B: Vercel
+1. Create a free account at [Vercel](https://vercel.com/).
+2. Import your GitHub repository.
+3. It will automatically detect the settings and deploy your site.
+
+---
+
+## 📅 Pro Tip for iCal Sync
+The website checks your Airbnb/Booking calendar every time a guest visits the page. If you block a date on Airbnb, it will appear as "Booked Elsewhere" on your website within minutes. This prevents double-booking and makes you look like a professional agency!
+
+*Buona fortuna con i tuoi appartamenti!*

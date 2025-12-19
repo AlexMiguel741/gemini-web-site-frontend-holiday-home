@@ -1,16 +1,26 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { getConciergeResponse } from '../services/geminiService';
-import { ChatMessage } from '../types';
+import { ChatMessage, Language } from '../types';
+import { SITE_CONFIG, UI_LABELS } from '../constants';
 
-const AIChatConcierge: React.FC = () => {
+interface AIChatConciergeProps {
+  lang: Language;
+}
+
+const AIChatConcierge: React.FC<AIChatConciergeProps> = ({ lang }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', content: "Ciao! I'm Elena, your local host. Looking for a place to stay in Laveno Mombello?" }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Re-initialize greeting when language changes
+  useEffect(() => {
+    setMessages([
+      { role: 'model', content: UI_LABELS.chat_welcome[lang] }
+    ]);
+  }, [lang]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -26,7 +36,7 @@ const AIChatConcierge: React.FC = () => {
     setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
     setIsLoading(true);
 
-    const response = await getConciergeResponse(userMsg, messages);
+    const response = await getConciergeResponse(userMsg, messages, lang);
     setMessages(prev => [...prev, { role: 'model', content: response }]);
     setIsLoading(false);
   };
@@ -37,9 +47,11 @@ const AIChatConcierge: React.FC = () => {
         <div className="bg-white w-[320px] sm:w-[380px] h-[480px] shadow-2xl flex flex-col rounded-3xl overflow-hidden border border-slate-100 animate-in slide-in-from-bottom-4 duration-300">
           <div className="p-5 bg-blue-500 text-white flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-lg">E</div>
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-lg">
+                {SITE_CONFIG.hostName.charAt(0)}
+              </div>
               <div>
-                <h4 className="font-semibold text-sm leading-none">Elena</h4>
+                <h4 className="font-semibold text-sm leading-none">{SITE_CONFIG.hostName}</h4>
                 <span className="text-[10px] opacity-80">Online • Local Host</span>
               </div>
             </div>
@@ -65,7 +77,7 @@ const AIChatConcierge: React.FC = () => {
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-bl-none text-xs text-slate-400 animate-pulse">
-                  Elena is typing...
+                  ...
                 </div>
               </div>
             )}
@@ -77,7 +89,7 @@ const AIChatConcierge: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Ask me anything..."
+              placeholder={lang === 'it' ? 'Chiedimi pure...' : lang === 'de' ? 'Frag mich was...' : 'Ask me anything...'}
               className="flex-1 bg-slate-50 border-none px-4 py-3 rounded-full text-sm focus:ring-2 focus:ring-blue-100 outline-none"
             />
             <button 
