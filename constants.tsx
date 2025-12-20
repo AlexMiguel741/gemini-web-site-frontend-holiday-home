@@ -2,10 +2,10 @@
 import { Apartment, SiteConfig, StoryContent, HeroContent, Translations } from './types';
 
 export const SITE_CONFIG: SiteConfig = {
-  name: 'Il Blu di Laveno',
-  hostName: 'Elena',
-  whatsapp: '393331234567',
-  email: 'info@ilbludilaveno.it',
+  name: 'Laveno Holiday Rentals',
+  hostName: 'Elsa',
+  whatsapp: '393480325148',
+  email: 'martinezelsa34@yahoo.it',
   locationLabel: {
     it: 'Laveno-Mombello, Lago Maggiore',
     en: 'Laveno-Mombello, Lake Maggiore',
@@ -29,28 +29,22 @@ export const HERO_SECTION: HeroContent = {
 export const APARTMENTS: Apartment[] = [
   {
     id: 'azure-terrace-suite',
-    name: { it: 'Azure Terrace Suite', en: 'Azure Terrace Suite', de: 'Azure Terrace Suite' },
-    tagline: { it: 'Luce, Colore e Vista Panoramica', en: 'Light, Color and Panoramic View', de: 'Licht, Farbe und Panoramablick' },
+    name: { it: 'Il Blu di Laveno', en: 'Azure Terrace Suite', de: 'Azure Terrace Suite' },
+    tagline: { it: 'Posizione Strategica', en: 'Light, Color and Panoramic View', de: 'Licht, Farbe und Panoramablick' },
     location: 'Laveno Centro',
-    price: 115, // Inserire solo l'intero (Euro)
+    price: 130, 
     bedrooms: 1,
     bathrooms: 1,
     sqft: 65,
     icalUrl: '',
-    googleMapsEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2774.786!2d8.618!3d45.908!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47867373f1d8212d%3A0xc06720138406f52!2sLaveno!5e0!3m2!1sit!2sit!4v1711111111111',
+    googleMapsEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2775.758215875175!2d8.615724075419156!3d45.9161437031722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785d8fbbea25a69%3A0x38d99c7f4765ccf0!2sVia%20Professor%20Monteggia%2C%208%2C%2021014%20Laveno-Mombello%20VA!5e0!3m2!1sit!2sit!4v1766249767238!5m2!1sit!2sit',
     images: [
-      './img/azure/01_panorama.jpg',       // Foto 3
-      './img/azure/02_cablecar.jpg',       // Foto 2
-      './img/azure/03_bedroom_art.jpg',    // Foto 6
-      './img/azure/04_living_sofa.jpg',    // Foto 1
-      './img/azure/05_kitchen_corner.jpg', // Foto 10
-      './img/azure/06_bathroom_blue.jpg',  // Foto 7
-      './img/azure/07_towels_detail.jpg',  // Foto 8
-      './img/azure/08_kitchen_front.jpg',  // Foto 11
-      './img/azure/09_wardrobe_wood.jpg',  // Foto 4
-      './img/azure/10_bedroom_prosp.jpg',  // Foto 9
-      './img/azure/11_entrance_hall.jpg',  // Foto 5
-      './img/azure/12_mirror_hall.jpg'     // Foto 12
+      './images/azure/foto_sala_1.png',
+      './images/azure/foto_sala_2.png',
+      './images/azure/foto_entrata.jpg',
+      './images/azure/foto_entrata_2.png',
+      './images/azure/foto_cucina.png',
+      './images/azure/foto_letto.png'
     ],
     description: { 
       it: 'Situato nel cuore pulsante di Laveno, questo appartamento incanta con i suoi colori mediterranei. La camera da letto principale accoglie gli ospiti con un suggestivo richiamo artistico classico, mentre la cucina moderna offre ogni comfort.', 
@@ -65,15 +59,22 @@ export const APARTMENTS: Apartment[] = [
   },
   {
     id: 'sapphire-studio-loft',
-    name: { it: 'Sapphire Studio Loft', en: 'Sapphire Studio Loft', de: 'Sapphire Studio Loft' },
+    name: { it: 'Verso il Lago', en: 'Verso il Lago', de: 'Verso il Lago' },
     tagline: { it: 'Eleganza Compatta Fronte Porto', en: 'Compact Elegance Waterfront', de: 'Kompakte Eleganz am Wasser' },
-    location: 'Fronte Porto',
-    price: 95,
+    location: 'Centro Laveno',
+    price: 125,
     bedrooms: 1,
     bathrooms: 1,
     sqft: 45,
-    images: ['./img/sapphire/01.jpg', './img/sapphire/02.jpg'],
-    description: { it: 'Design raffinato per coppie.', en: 'Refined design for couples.', de: 'Raffiniertes Design per coppie.' },
+    icalUrl: '',
+    googleMapsEmbedUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2776.1951895238008!2d8.621751575418575!3d45.90740720375946!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785d85f4c91828b%3A0x2da0159c0edad093!2sVia%20Ronco%20S.%20Maria%2C%202%2C%2021014%20Laveno-Mombello%20VA!5e0!3m2!1sit!2sit!4v1766251081015!5m2!1sit!2sit',
+    images: ['./images/sapphire/foto-sala.JPG',
+             './images/sapphire/foto-sala_2.JPG',
+             './images/sapphire/foto-cucina.JPG',
+             './images/sapphire/foto_letto.JPG',
+              './images/sapphire/foto_sala_3.JPG'
+    ],
+    description: { it: 'Posizione centrale', en: 'Central position', de: 'Raffiniertes Design per coppie.' },
     amenities: { it: ['Self Check-in'], en: ['Self Check-in'], de: ['Self Check-in'] }
   },
   {
@@ -135,7 +136,7 @@ export const UI_LABELS: Translations = {
   booked: { it: 'Occupato', en: 'Booked', de: 'Belegt' },
   last_sync: { it: 'Aggiornato', en: 'Updated', de: 'Aktualisiert' },
   chat_welcome: { it: "Benvenuti al Blu di Laveno! Sono Elena, il vostro concierge. Come posso aiutarvi?", en: "Welcome to Il Blu di Laveno! I'm Elena, your concierge. How can I help you today?", de: "Willkommen im Il Blu di Laveno! Ich bin Elena. Wie kann ich Ihnen helfen?" },
-  contact_human: { it: "Parla con Elena", en: "Talk to Elena", de: "Kontakt con Elena" },
+  contact_human: { it: "Parla con Elsa", en: "Talk to Elsa", de: "Kontakt con Elsa" },
   contact_desc: { it: "Per prenotazioni dirette, gruppi o soggiorni lunghi, contattami direttamente su WhatsApp.", en: "For direct bookings, groups, or long stays, contact me directly via WhatsApp.", de: "Für Direktbuchungen, Gruppen oder Langzeitaufenthalte kontaktieren Sie mich direttamente per WhatsApp." }
 };
 
