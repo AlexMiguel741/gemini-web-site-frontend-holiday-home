@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { APARTMENTS, SITE_CONFIG, STORY_CONTENT, HERO_SECTION, UI_LABELS } from './constants';
 import { Apartment, Language } from './types';
 import ApartmentCard from './components/ApartmentCard';
@@ -8,31 +8,92 @@ import { fetchAndParseIcal, BookedRange } from './services/icalService';
 
 type View = 'home' | 'story' | 'property';
 
-const SmartImage: React.FC<{ src?: string; alt: string; className?: string }> = ({ src, alt, className }) => {
+const SmartImage: React.FC<{ src?: string; alt: string; className?: string; onClick?: () => void }> = ({ src, alt, className, onClick }) => {
   const fallback = 'https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&q=80&w=1200';
-  const [currentSrc, setCurrentSrc] = useState(src || fallback);
   const [hasError, setHasError] = useState(false);
 
+  return (
+    <div className={`overflow-hidden bg-slate-100 ${className}`}>
+      <img 
+        src={hasError || !src ? fallback : src} 
+        alt={alt} 
+        className={`w-full h-full object-cover ${onClick ? 'cursor-pointer hover:scale-105 transition-transform duration-700' : ''}`}
+        onError={() => setHasError(true)}
+        loading="lazy"
+        onClick={onClick}
+      />
+    </div>
+  );
+};
+
+const Lightbox: React.FC<{ images: string[]; isOpen: boolean; onClose: () => void; startIndex?: number; lang: Language }> = ({ images, isOpen, onClose, startIndex = 0, lang }) => {
+  const [currentIndex, setCurrentIndex] = useState(startIndex);
+
   useEffect(() => {
-    setCurrentSrc(src || fallback);
-    setHasError(false);
-  }, [src]);
+    setCurrentIndex(startIndex);
+    if (isOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = 'unset';
+  }, [isOpen, startIndex]);
+
+  if (!isOpen) return null;
 
   return (
-    <img 
-      src={hasError ? fallback : currentSrc} 
-      alt={alt} 
-      className={className}
-      onError={() => setHasError(true)}
-      loading="lazy"
-    />
+    <div className="fixed inset-0 z-[300] bg-white animate-in fade-in duration-300 flex flex-col">
+      <div className="h-16 sm:h-20 px-4 sm:px-6 flex items-center justify-between border-b border-slate-100 bg-white/80 backdrop-blur-md">
+        <button onClick={onClose} className="flex items-center gap-2 text-slate-900 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth={2.5}/></svg>
+          {UI_LABELS.back[lang]}
+        </button>
+        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+          {currentIndex + 1} / {images.length}
+        </div>
+        <button onClick={onClose} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" strokeWidth={2}/></svg>
+        </button>
+      </div>
+      
+      <div className="flex-1 relative flex items-center justify-center bg-slate-50 overflow-hidden">
+        <button 
+          onClick={() => setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
+          className="absolute left-2 sm:left-4 z-10 p-3 sm:p-4 bg-white/90 backdrop-blur rounded-full shadow-lg hover:bg-white transition-all active:scale-90"
+        >
+          <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth={2.5}/></svg>
+        </button>
+        
+        <div className="w-full h-full flex items-center justify-center p-4">
+          <img 
+            src={images[currentIndex]} 
+            className="max-w-full max-h-full object-contain rounded-xl sm:rounded-2xl shadow-2xl" 
+            alt={`Foto ${currentIndex + 1}`} 
+          />
+        </div>
+
+        <button 
+          onClick={() => setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
+          className="absolute right-2 sm:right-4 z-10 p-3 sm:p-4 bg-white/90 backdrop-blur rounded-full shadow-lg hover:bg-white transition-all active:scale-90"
+        >
+          <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth={2.5}/></svg>
+        </button>
+      </div>
+
+      <div className="h-24 bg-white border-t border-slate-100 flex items-center justify-start sm:justify-center px-4 gap-3 overflow-x-auto no-scrollbar">
+        {images.map((img, idx) => (
+          <button 
+            key={idx} 
+            onClick={() => setCurrentIndex(idx)}
+            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${currentIndex === idx ? 'border-blue-600 scale-105 shadow-md' : 'border-transparent opacity-40 hover:opacity-100'}`}
+          >
+            <img src={img} className="w-full h-full object-cover" alt="" />
+          </button>
+        ))}
+      </div>
+    </div>
   );
 };
 
 const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> = ({ apartment, lang }) => {
   const [viewDate, setViewDate] = useState(new Date());
   const [isSyncing, setIsSyncing] = useState(false);
-  const [lastSync, setLastSync] = useState(new Date());
   const [realBookings, setRealBookings] = useState<BookedRange[]>([]);
 
   useEffect(() => {
@@ -41,7 +102,6 @@ const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> =
       setIsSyncing(true);
       const bookings = await fetchAndParseIcal(apartment.icalUrl);
       setRealBookings(bookings);
-      setLastSync(new Date());
       setIsSyncing(false);
     };
     sync();
@@ -58,49 +118,39 @@ const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> =
   };
 
   return (
-    <div className="bg-white border border-slate-100 rounded-3xl p-6 sm:p-10 shadow-sm w-full overflow-hidden">
+    <div className="bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h4 className="font-bold text-slate-900 text-2xl capitalize">{monthName} {year}</h4>
+          <h4 className="font-bold text-slate-900 text-xl capitalize">{monthName} {year}</h4>
           <div className="flex items-center gap-2 mt-1">
             <div className={`w-2 h-2 rounded-full ${isSyncing ? 'bg-orange-400 animate-pulse' : 'bg-emerald-500'}`}></div>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400">
+            <span className="text-[9px] uppercase font-bold tracking-widest text-slate-400">
               {isSyncing ? UI_LABELS.sync_live[lang] : UI_LABELS.sync_connected[lang]}
             </span>
           </div>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
-          <button onClick={() => setViewDate(new Date(year, viewDate.getMonth() - 1, 1))} className="flex-1 sm:flex-none p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
-            <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth={2}/></svg>
+          <button onClick={() => setViewDate(new Date(year, viewDate.getMonth() - 1, 1))} className="flex-1 sm:flex-none p-2 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
+            <svg className="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth={2}/></svg>
           </button>
-          <button onClick={() => setViewDate(new Date(year, viewDate.getMonth() + 1, 1))} className="flex-1 sm:flex-none p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
-            <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth={2}/></svg>
+          <button onClick={() => setViewDate(new Date(year, viewDate.getMonth() + 1, 1))} className="flex-1 sm:flex-none p-2 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
+            <svg className="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth={2}/></svg>
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 sm:gap-2">
-        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => <div key={d} className="text-center text-[10px] font-bold text-slate-300 py-2">{d}</div>)}
+      <div className="grid grid-cols-7 gap-1">
+        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => <div key={d} className="text-center text-[10px] font-bold text-slate-300 py-1">{d}</div>)}
         {Array.from({ length: firstDayOfMonth }).map((_, i) => <div key={`empty-${i}`}></div>)}
         {Array.from({ length: daysInMonth }).map((_, i) => {
           const day = i + 1;
           const booked = isDayBooked(day);
           return (
-            <div key={day} className={`aspect-square flex items-center justify-center rounded-lg text-sm font-medium border transition-all ${booked ? 'bg-slate-50 text-slate-200 border-transparent' : 'bg-white text-slate-700 border-slate-50 shadow-sm hover:border-blue-200'}`}>
+            <div key={day} className={`aspect-square flex items-center justify-center rounded-lg text-xs font-medium border transition-all ${booked ? 'bg-slate-50 text-slate-200 border-transparent' : 'bg-white text-slate-700 border-slate-50 shadow-sm'}`}>
               {day}
             </div>
           );
         })}
-      </div>
-      <div className="mt-8 flex flex-wrap gap-6 pt-6 border-t border-slate-50">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-blue-500"></div>
-          <span className="text-[10px] uppercase font-bold text-slate-400">{UI_LABELS.available[lang]}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-slate-100"></div>
-          <span className="text-[10px] uppercase font-bold text-slate-400">{UI_LABELS.booked[lang]}</span>
-        </div>
       </div>
     </div>
   );
@@ -111,6 +161,8 @@ const App: React.FC = () => {
   const [selectedAptId, setSelectedAptId] = useState<string | null>(null);
   const [lang, setLang] = useState<Language>('it');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const selectedApartment = APARTMENTS.find(a => a.id === selectedAptId);
 
@@ -134,6 +186,11 @@ const App: React.FC = () => {
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     }
+  };
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setIsLightboxOpen(true);
   };
 
   const LanguageSwitcher = () => (
@@ -208,14 +265,19 @@ const App: React.FC = () => {
               </div>
             </section>
 
-            <section className="py-20 px-6 bg-slate-50 overflow-hidden">
+            {/* MAPPA GENERALE HOME */}
+            <section className="py-20 px-6 bg-slate-50">
                <div className="max-w-7xl mx-auto">
-                  <div className="rounded-3xl overflow-hidden shadow-2xl bg-white p-2 sm:p-4 aspect-video min-h-[400px]">
+                  <div className="text-center mb-12">
+                    <h2 className="text-2xl sm:text-4xl font-bold mb-2 tracking-tight">{UI_LABELS.neighborhood_title[lang]}</h2>
+                    <p className="text-slate-400 serif italic">{SITE_CONFIG.locationLabel[lang]}</p>
+                  </div>
+                  <div className="rounded-[3rem] overflow-hidden shadow-2xl bg-white border border-slate-100 aspect-video min-h-[400px]">
                     <iframe 
                       title="Laveno Map"
                       src={SITE_CONFIG.homeMapEmbedUrl} 
-                      className="w-full h-full grayscale-[0.3] contrast-[1.1]" 
-                      style={{ border: 0, minHeight: '400px' }} 
+                      className="w-full h-full grayscale-[0.2]" 
+                      style={{ border: 0 }} 
                       allowFullScreen={true} 
                       loading="lazy"
                     ></iframe>
@@ -237,110 +299,143 @@ const App: React.FC = () => {
         )}
 
         {view === 'property' && selectedApartment && (
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 bg-white pb-20 w-full overflow-hidden">
-            <section className="px-6 py-6 sm:py-10 bg-slate-50 w-full">
-              <div className="max-w-7xl mx-auto">
-                <button onClick={() => navigateTo('home', undefined, 'stays')} className="flex items-center gap-2 text-slate-400 hover:text-slate-900 font-bold uppercase text-[10px] tracking-widest mb-6 transition-colors">
+          <div className="animate-in fade-in duration-500 bg-white pb-20 w-full overflow-hidden">
+            <section className="bg-slate-50 border-b border-slate-100">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+                <button onClick={() => navigateTo('home', undefined, 'stays')} className="flex items-center gap-2 text-slate-400 hover:text-slate-900 font-bold uppercase text-[10px] tracking-widest mb-8 transition-colors">
                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth={2.5}/></svg>
                    {UI_LABELS.back[lang]}
                 </button>
                 
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
-                  <div className="md:col-span-8 overflow-hidden rounded-3xl shadow-xl aspect-video md:aspect-auto">
-                    <SmartImage src={selectedApartment.images[0]} alt={selectedApartment.name[lang]} className="w-full h-full object-cover min-h-[300px]" />
+                {/* GALLERIA DINAMICA STABILIZZATA */}
+                <div className="relative group min-h-[300px] sm:min-h-0">
+                  {/* Vista Mobile: Slider */}
+                  <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 h-[350px]">
+                    {selectedApartment.images.map((img, idx) => (
+                      <div key={idx} className="snap-center shrink-0 w-[85vw] h-full">
+                        <SmartImage 
+                          src={img} 
+                          alt="" 
+                          className="w-full h-full rounded-2xl shadow-lg border border-slate-200" 
+                          onClick={() => openLightbox(idx)}
+                        />
+                      </div>
+                    ))}
                   </div>
-                  <div className="md:col-span-4 grid grid-cols-2 md:grid-cols-1 gap-4 sm:gap-6">
-                    <div className="aspect-square overflow-hidden rounded-3xl shadow-lg">
-                      <SmartImage src={selectedApartment.images[1]} alt="" className="w-full h-full object-cover" />
+
+                  {/* Vista Desktop: Mosaico con aspect-ratio bloccato */}
+                  <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-4 rounded-[2.5rem] overflow-hidden shadow-2xl bg-slate-200 aspect-[21/9] w-full">
+                    <div className="col-span-2 row-span-2 h-full">
+                      <SmartImage 
+                        src={selectedApartment.images[0]} 
+                        alt="" 
+                        className="h-full w-full" 
+                        onClick={() => openLightbox(0)}
+                      />
                     </div>
-                    <div className="aspect-square overflow-hidden rounded-3xl shadow-lg">
-                      <SmartImage src={selectedApartment.images[2]} alt="" className="w-full h-full object-cover" />
-                    </div>
+                    {selectedApartment.images.slice(1, 5).map((img, idx) => (
+                      <div key={idx} className="h-full">
+                        <SmartImage 
+                          src={img} 
+                          alt="" 
+                          className="h-full w-full" 
+                          onClick={() => openLightbox(idx + 1)} 
+                        />
+                      </div>
+                    ))}
                   </div>
+                  
+                  <button 
+                    onClick={() => openLightbox(0)}
+                    className="absolute bottom-6 right-6 bg-white/95 backdrop-blur px-6 py-3 rounded-2xl shadow-xl border border-slate-200 flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-slate-900 hover:bg-white transition-all z-10"
+                  >
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7" strokeWidth={2}/></svg>
+                    {lang === 'it' ? 'Esplora Galleria' : lang === 'de' ? 'Galerie ansehen' : 'Explore Gallery'}
+                  </button>
                 </div>
               </div>
             </section>
 
-            <section className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20">
-              <div className="lg:col-span-2 space-y-12">
-                <div>
-                   <h1 className="text-4xl sm:text-6xl font-bold mb-4 tracking-tighter text-slate-900">{selectedApartment.name[lang]}</h1>
+            <section className="max-w-7xl mx-auto px-6 py-12 lg:py-16 grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
+              <div className="lg:col-span-2 space-y-16">
+                <div className="space-y-4">
+                   <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter text-slate-900 leading-tight">{selectedApartment.name[lang]}</h1>
                    <p className="text-xl sm:text-2xl serif italic text-slate-400">{selectedApartment.tagline[lang]}</p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-6 py-8 border-y border-slate-100">
-                  <div className="flex flex-col"><span className="text-2xl sm:text-3xl font-bold">{selectedApartment.bedrooms}</span><span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">{UI_LABELS.bedrooms[lang]}</span></div>
-                  <div className="flex flex-col"><span className="text-2xl sm:text-3xl font-bold">{selectedApartment.bathrooms}</span><span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">{UI_LABELS.bathrooms[lang]}</span></div>
-                  <div className="flex flex-col"><span className="text-2xl sm:text-3xl font-bold">{selectedApartment.sqft}</span><span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">{UI_LABELS.living_space[lang]}</span></div>
-                </div>
-
-                <div className="prose prose-lg text-slate-600 max-w-none">
-                   <h3 className="text-slate-900 font-bold text-2xl mb-4">{UI_LABELS.experience_title[lang]}</h3>
-                   <p className="leading-relaxed whitespace-pre-line">{selectedApartment.description[lang]}</p>
+                <div className="grid grid-cols-3 gap-8 py-10 border-y border-slate-100">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-3xl font-bold text-slate-900">{selectedApartment.bedrooms}</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{UI_LABELS.bedrooms[lang]}</span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-3xl font-bold text-slate-900">{selectedApartment.bathrooms}</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{UI_LABELS.bathrooms[lang]}</span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-3xl font-bold text-slate-900">{selectedApartment.sqft}</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{UI_LABELS.living_space[lang]}</span>
+                  </div>
                 </div>
 
                 <div className="space-y-6">
-                   <h3 className="text-slate-900 font-bold text-2xl">{UI_LABELS.amenities_title[lang]}</h3>
+                   <h3 className="text-slate-900 font-bold text-2xl tracking-tight">{UI_LABELS.experience_title[lang]}</h3>
+                   <p className="text-lg text-slate-600 leading-relaxed whitespace-pre-line font-light">{selectedApartment.description[lang]}</p>
+                </div>
+
+                <div className="space-y-8">
+                   <h3 className="text-slate-900 font-bold text-2xl tracking-tight">{UI_LABELS.amenities_title[lang]}</h3>
                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {selectedApartment.amenities[lang].map((a, i) => (
-                        <div key={i} className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                           <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
-                           <span className="text-sm font-medium text-slate-700">{a}</span>
+                        <div key={i} className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-blue-100 transition-colors">
+                           <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                           <span className="text-sm font-semibold text-slate-700">{a}</span>
                         </div>
                       ))}
                    </div>
                 </div>
 
-                <div className="space-y-6">
-                   <h3 className="text-slate-900 font-bold text-2xl">{UI_LABELS.availability_title[lang]}</h3>
-                   <AvailabilityCalendar apartment={selectedApartment} lang={lang} />
+                <div className="space-y-8">
+                   <h3 className="text-slate-900 font-bold text-2xl tracking-tight">{UI_LABELS.availability_title[lang]}</h3>
+                   <div className="w-full">
+                     <AvailabilityCalendar apartment={selectedApartment} lang={lang} />
+                   </div>
                 </div>
 
-                <div className="space-y-6">
-                   <h3 className="text-slate-900 font-bold text-2xl">{UI_LABELS.neighborhood_title[lang]}</h3>
-                   <div className="rounded-3xl overflow-hidden border-8 border-slate-50 shadow-inner w-full bg-slate-100 block" style={{ minHeight: '400px', height: 'auto', position: 'relative' }}>
+                <div className="space-y-8">
+                   <h3 className="text-slate-900 font-bold text-2xl tracking-tight">{UI_LABELS.neighborhood_title[lang]}</h3>
+                   <div className="rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-xl w-full aspect-video min-h-[400px]">
                       {selectedApartment.googleMapsEmbedUrl ? (
                         <iframe 
                           title={`Location of ${selectedApartment.name[lang]}`}
                           src={selectedApartment.googleMapsEmbedUrl} 
-                          className="w-full h-full border-0" 
-                          style={{ minHeight: '400px', width: '100%', display: 'block' }}
+                          className="w-full h-full border-0 grayscale-[0.2]" 
                           allowFullScreen={true} 
                           loading="lazy"
                         ></iframe>
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center p-10 text-slate-400 font-bold uppercase text-xs tracking-widest text-center">
-                          Map not configured for this residence
+                        <div className="w-full h-full flex items-center justify-center p-10 bg-slate-50 text-slate-400 font-bold uppercase text-[10px] tracking-widest">
+                          Map not configured
                         </div>
                       )}
                    </div>
                 </div>
               </div>
 
-              <div className="lg:col-span-1">
-                <div className="sticky top-32 p-8 bg-slate-900 text-white rounded-[2rem] shadow-2xl space-y-8">
-                  <div className="space-y-2">
+              <div className="lg:col-span-1 relative">
+                <div className="lg:sticky lg:top-36 p-8 bg-slate-900 text-white rounded-[2.5rem] shadow-2xl space-y-10">
+                  <div className="space-y-3">
                     <span className="text-[10px] uppercase font-bold text-blue-400 tracking-widest">{UI_LABELS.direct_only[lang]}</span>
                     <p className="text-4xl sm:text-5xl font-bold tracking-tighter">
                       {UI_LABELS.price_from[lang]} {formatPriceFull(selectedApartment.price)}
                     </p>
-                    <div className="inline-block bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border border-blue-500/20">{UI_LABELS.best_rate[lang]}</div>
+                    <div className="inline-block bg-white/10 text-white/80 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-white/10">
+                      {UI_LABELS.best_rate[lang]}
+                    </div>
                   </div>
-                  <p className="text-xs opacity-60 leading-relaxed">{UI_LABELS.save_msg[lang]}</p>
                   
-                  <div className="space-y-4 pt-4 border-t border-white/10">
-                    <div className="flex items-center gap-3 text-xs opacity-80 font-medium">
-                       <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
-                       {UI_LABELS.whatsapp_resp[lang]}
-                    </div>
-                    <div className="flex items-center gap-3 text-xs opacity-80 font-medium">
-                       <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
-                       {UI_LABELS.concierge_service[lang]}
-                    </div>
-                  </div>
-
                   <a 
-                    href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=Interessato alla casa: ${selectedApartment.name[lang]}`} 
+                    href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=Ciao ${SITE_CONFIG.hostName}, vorrei prenotare: ${selectedApartment.name[lang]}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="block w-full bg-blue-600 py-6 rounded-2xl text-center font-bold uppercase tracking-widest text-xs hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/20 active:scale-[0.98]"
@@ -348,8 +443,10 @@ const App: React.FC = () => {
                     {UI_LABELS.cta_btn[lang]}
                   </a>
 
-                  <div className="flex items-center gap-4 pt-4">
-                     <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-bold text-xl border border-white/5">{SITE_CONFIG.hostName.charAt(0)}</div>
+                  <div className="flex items-center gap-4 pt-6 border-t border-white/10">
+                     <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-bold text-xl border border-white/10">
+                       {SITE_CONFIG.hostName.charAt(0)}
+                     </div>
                      <div>
                         <p className="text-xs font-bold leading-none mb-1">{SITE_CONFIG.hostName} {UI_LABELS.host_online[lang]}</p>
                         <p className="text-[10px] opacity-40 font-bold uppercase tracking-widest">{UI_LABELS.host_status[lang]}</p>
@@ -358,6 +455,14 @@ const App: React.FC = () => {
                 </div>
               </div>
             </section>
+
+            <Lightbox 
+              images={selectedApartment.images} 
+              isOpen={isLightboxOpen} 
+              onClose={() => setIsLightboxOpen(false)} 
+              startIndex={lightboxIndex}
+              lang={lang}
+            />
           </div>
         )}
 
@@ -370,15 +475,15 @@ const App: React.FC = () => {
             <div className="prose prose-xl text-slate-500 space-y-10 text-left mb-16 font-light">
               {STORY_CONTENT.paragraphs[lang].map((p, i) => <p key={i}>{p}</p>)}
             </div>
-            <SmartImage src={STORY_CONTENT.image} alt={SITE_CONFIG.name} className="w-full rounded-[2.5rem] shadow-2xl" />
+            <SmartImage src={STORY_CONTENT.image} alt={SITE_CONFIG.name} className="w-full rounded-[2.5rem] shadow-2xl h-[400px] sm:h-[600px]" />
           </section>
         )}
       </main>
 
       <footer className="py-20 border-t border-slate-50 bg-[#fdfdfd] shrink-0">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
           <p className="text-2xl font-bold tracking-tighter mb-4 text-slate-900">{SITE_CONFIG.name}</p>
-          <div className="flex gap-8 mb-10 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          <div className="flex flex-wrap justify-center gap-6 mb-10 text-[10px] font-bold uppercase tracking-widest text-slate-400">
             <button onClick={() => navigateTo('home')} className="hover:text-slate-900 transition-colors">Home</button>
             <button onClick={() => navigateTo('story')} className="hover:text-slate-900 transition-colors">{UI_LABELS.nav_history[lang]}</button>
             <button onClick={() => navigateTo('home', undefined, 'contact')} className="hover:text-slate-900 transition-colors">{UI_LABELS.nav_contact[lang]}</button>
