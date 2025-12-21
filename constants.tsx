@@ -39,12 +39,12 @@ export const APARTMENTS: Apartment[] = [
     icalUrl: '',
     googleMapsEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2775.758215875175!2d8.615724075419156!3d45.9161437031722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785d8fbbea25a69%3A0x38d99c7f4765ccf0!2sVia%20Professor%20Monteggia%2C%208%2C%2021014%20Laveno-Mombello%20VA!5e0!3m2!1sit!2sit!4v1766249767238!5m2!1sit!2sit',
     images: [
-      './images/azure/foto_sala_1.png',
-      './images/azure/foto_sala_2.png',
-      './images/azure/foto_entrata.jpg',
-      './images/azure/foto_entrata_2.png',
-      './images/azure/foto_cucina.png',
-      './images/azure/foto_letto.png'
+      '/images/azure/foto_sala_1.png',
+      '/images/azure/foto_sala_2.png',
+      '/images/azure/foto_entrata.jpg',
+      '/images/azure/foto_entrata_2.png',
+      '/images/azure/foto_cucina.png',
+      '/images/azure/foto_letto.png'
     ],
     description: { 
       it: "A 26 km da Villa Panza a Laveno, Il Blu di Laveno prevede un alloggio con vista sulla montagna, WiFi gratuito e parcheggio privato gratuito.\n\nLa struttura presenta la vista sul giardino e si trova a 38 km da Stazione Ferroviaria di Lugano e 40 km da Centro Esposizioni di Lugano.\n\nQuesto appartamento comprende 1 camera da letto, un soggiorno, una cucina con utensili, frigorifero e macchina da caffè, e 1 bagno con bidet e doccia.\n\nPresso questo appartamento troverete asciugamani e lenzuola in dotazione.\n\nAeroporto di Milano Malpensa si trova a 39 km dalla struttura.", 
@@ -68,11 +68,11 @@ export const APARTMENTS: Apartment[] = [
     sqft: 45,
     icalUrl: '',
     googleMapsEmbedUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2776.1951895238008!2d8.621751575418575!3d45.90740720375946!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785d85f4c91828b%3A0x2da0159c0edad093!2sVia%20Ronco%20S.%20Maria%2C%202%2C%2021014%20Laveno-Mombello%20VA!5e0!3m2!1sit!2sit!4v1766251081015!5m2!1sit!2sit',
-    images: ['./images/sapphire/foto-sala.JPG',
-             './images/sapphire/foto-sala_2.JPG',
-             './images/sapphire/foto-cucina.JPG',
-             './images/sapphire/foto_letto.JPG',
-              './images/sapphire/foto_sala_3.JPG'
+    images: ['/images/sapphire/foto-sala.JPG',
+             '/images/sapphire/foto-sala_2.JPG',
+             '/images/sapphire/foto-cucina.JPG',
+             '/images/sapphire/foto_letto.JPG',
+              '/images/sapphire/foto_sala_3.JPG'
     ],
     description: { it: 'Verso il Lago si trova a Laveno a 25 km da Villa Panza, 38 km da Stazione Ferroviaria di Lugano e 39 km da Monastero di Torba. La struttura presenta la vista sul giardino e il WiFi gratuito in tutta la struttura\n\nQuesto appartamento con balcone e vista sulla città offre 1 camera da letto, un soggiorno, una TV a schermo piatto, una cucina con frigorifero e piano cottura e 1 bagno con doccia.\n\nPresso questo appartamento troverete asciugamani e lenzuola tra i servizi disponibili.\n\n Centro Esposizioni di Lugano è a 40 km da questo appartamento, mentre Stazione Ferroviaria di Mendrisio si trova a 43 km dalla struttura.', 
       en: 'Central position', 
