@@ -167,7 +167,7 @@ export const UI_LABELS: Translations = {
   chat_welcome: { it: "Benvenuti al Blu di Laveno! Sono Elsa, il vostro concierge. Come posso aiutarvi?", en: "Welcome to Il Blu di Laveno! I'm Elsa, your concierge. How can I help you today?", de: "Willkommen im Il Blu di Laveno! Ich bin Elsa. Wie kann ich Ihnen helfen?" },
   contact_human: { it: "Parla con Elsa", en: "Talk to Elsa", de: "Kontakt con Elsa" },
   contact_desc: { it: "Per prenotazioni dirette, gruppi o soggiorni lunghi, contattami direttamente su WhatsApp.", en: "For direct bookings, groups, or long stays, contact me directly via WhatsApp.", de: "Für Direktbuchungen, Gruppen oder Langzeitaufenthalte kontaktieren Sie mich direttamente per WhatsApp." },
-  distances_title: { it: 'Dove Siamo', en: 'Where We Are', de: 'Wo Wir Sind' },
+  distances_title: { it: 'Distanze da Laveno', en: 'Laveno Distances', de: 'Wo Wir Sind' },
   distances_subtitle: { it: 'Perfetta posizione per esplorare la regione', en: 'Perfect location to explore the region', de: 'Perfekte Lage um die Region zu erkunden' }
 };
 
