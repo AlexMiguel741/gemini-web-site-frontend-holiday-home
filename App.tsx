@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { APARTMENTS, SITE_CONFIG, STORY_CONTENT, HERO_SECTION, UI_LABELS } from './constants';
+import { APARTMENTS, SITE_CONFIG, STORY_CONTENT, HERO_SECTION, UI_LABELS, DISTANCES } from './constants';
 import { Apartment, Language } from './types';
 import ApartmentCard from './components/ApartmentCard';
 import AIChatConcierge from './components/AIChatConcierge';
@@ -329,7 +329,7 @@ const App: React.FC = () => {
                   {HERO_SECTION.title1[lang]} <br />
                   <span className="serif italic font-normal text-blue-600">{HERO_SECTION.title2[lang]}</span>
                 </h1>
-                <p className="text-base sm:text-xl text-slate-500 mb-10 font-light max-w-2xl mx-auto">{HERO_SECTION.description[lang]}</p>
+                <p className="text-base sm:text-xl text-slate-500 mb-10 font-light max-w-2xl mx-auto" dangerouslySetInnerHTML={{ __html: HERO_SECTION.description[lang] }} />
                 <button onClick={() => navigateTo('home', undefined, 'stays')} className="bg-slate-900 text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-blue-600 shadow-xl transition-all">
                   {HERO_SECTION.buttonLabel[lang]}
                 </button>
@@ -343,6 +343,28 @@ const App: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
                 {APARTMENTS.map(apt => <ApartmentCard key={apt.id} apartment={apt} lang={lang} onSelect={a => navigateTo('property', a.id)} />)}
+              </div>
+            </section>
+
+            {/* DISTANCES SECTION */}
+            <section className="py-20 px-6 bg-white">
+              <div className="max-w-7xl mx-auto">
+                <div className="text-center mb-16">
+                  <h2 className="text-3xl sm:text-5xl font-bold mb-4 tracking-tight">{UI_LABELS.distances_title[lang]}</h2>
+                  <p className="text-slate-400 serif italic text-lg sm:text-xl">{UI_LABELS.distances_subtitle[lang]}</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {DISTANCES[lang].map((dist, i) => (
+                    <div key={i} className="bg-slate-50 rounded-3xl p-8 text-center shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300">
+                      <div className="text-6xl mb-6">{dist.icon}</div>
+                      <h3 className="text-xl font-bold text-slate-900 mb-3">{dist.place}</h3>
+                      <div className="space-y-1">
+                        <p className="text-lg font-semibold text-blue-600">{dist.distance}</p>
+                        <p className="text-sm text-slate-500">{dist.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </section>
 
@@ -444,7 +466,7 @@ const App: React.FC = () => {
                    <p className="text-xl sm:text-2xl serif italic text-slate-400">{selectedApartment.tagline[lang]}</p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-8 py-10 border-y border-slate-100">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-10 border-y border-slate-100">
                   <div className="flex flex-col gap-1">
                     <span className="text-3xl font-bold text-slate-900">{selectedApartment.bedrooms}</span>
                     <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{UI_LABELS.bedrooms[lang]}</span>
@@ -456,6 +478,10 @@ const App: React.FC = () => {
                   <div className="flex flex-col gap-1">
                     <span className="text-3xl font-bold text-slate-900">{selectedApartment.sqft}</span>
                     <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{UI_LABELS.living_space[lang]}</span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-3xl font-bold text-slate-900">{selectedApartment.maxGuests}</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{UI_LABELS.max_guests[lang]}</span>
                   </div>
                 </div>
 

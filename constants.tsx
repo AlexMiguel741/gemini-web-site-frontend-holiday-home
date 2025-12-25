@@ -2,7 +2,7 @@
 import { Apartment, SiteConfig, StoryContent, HeroContent, Translations } from './types';
 
 export const SITE_CONFIG: SiteConfig = {
-  name: 'Laveno Holiday Rentals',
+  name: 'Case Vacanze Lago Maggiore',
   hostName: 'Elsa',
   whatsapp: '393480325148',
   email: 'martinezelsa34@yahoo.it',
@@ -15,13 +15,13 @@ export const SITE_CONFIG: SiteConfig = {
 };
 
 export const HERO_SECTION: HeroContent = {
-  subtitle: { it: 'Vivere il Blu del Lago', en: 'Living the Lake Blue', de: 'Leben im Blau des Sees' },
-  title1: { it: 'Soggiorni d\'Elite', en: 'Elite Stays', de: 'Elite-Aufenthalte' },
-  title2: { it: 'a Laveno.', en: 'in Laveno.', de: 'in Laveno.' },
-  description: { 
-    it: 'Quattro residenze esclusive nel cuore pulsante di Laveno-Mombello. A pochi passi dal Lago Maggiore e dai traghetti per le Isole Borromee.', 
-    en: 'Four exclusive residences in the heart of Laveno-Mombello. Just steps from Lake Maggiore and the Borromean Islands ferries.', 
-    de: 'Vier exklusive Residenzen im Herzen von Laveno-Mombello. Nur wenige Schritte vom Lago Maggiore und den Fähren zu den Borromäischen Inseln entfernt.' 
+  subtitle: { it: 'Vivere il Lago Maggiore', en: 'Living the Lake Blue', de: 'Leben im Blau des Sees' },
+  title1: { it: 'Case Vacanze', en: 'Elite Stays', de: 'Elite-Aufenthalte' },
+  title2: { it: 'Lago Maggiore', en: 'in Laveno.', de: 'in Laveno.' },
+  description: {
+    it: 'Scopri <strong class="font-bold text-slate-700">appartamenti indipendenti</strong>,<br>completamente moderni, arredati e confortevoli,<br>in posizioni <strong class="font-bold text-slate-700">strategiche</strong> a pochi minuti dal Lago Maggiore.<br>Vivi una vacanza senza pensieri tra acqua e montagna.<br>La nostra gestione <strong class="font-bold text-slate-700">familiare</strong> garantisce un\'accoglienza calorosa e assistenza personale: siamo qui per te, davvero, quando ne hai bisogno.',
+    en: 'Discover four exclusive residences nestled in the picturesque heart of Laveno-Mombello. Immerse yourself in luxury, just moments from the shimmering waters of Lake Maggiore and convenient ferry access to the enchanting Borromean Islands.\n\nExperience personalized hospitality with our family-run management - we\'re truly here for you when you need us.',
+    de: 'Entdecken Sie vier exklusive Residenzen im malerischen Herzen von Laveno-Mombello. Tauchen Sie ein in Luxus, nur wenige Augenblicke von den glitzernden Wassern des Lago Maggiore und dem bequemen Fährenzugang zu den verzaubernden Borromäischen Inseln entfernt.\n\nErleben Sie persönliche Gastfreundschaft mit unserem familiengeführten Management - wir sind wirklich da, wenn Sie uns brauchen.'
   },
   buttonLabel: { it: 'Vedi Disponibilità', en: 'Check Availability', de: 'Verfügbarkeit prüfen' }
 };
@@ -36,6 +36,7 @@ export const APARTMENTS: Apartment[] = [
     bedrooms: 1,
     bathrooms: 1,
     sqft: 65,
+    maxGuests: 3,
     icalUrl: 'https://ical.booking.com/v1/export/t/e95dd962-d17c-4d29-8b5b-1e8235c1fe19.ics',
     googleMapsEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2775.758215875175!2d8.615724075419156!3d45.9161437031722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785d8fbbea25a69%3A0x38d99c7f4765ccf0!2sVia%20Professor%20Monteggia%2C%208%2C%2021014%20Laveno-Mombello%20VA!5e0!3m2!1sit!2sit!4v1766249767238!5m2!1sit!2sit',
     images: [
@@ -66,6 +67,7 @@ export const APARTMENTS: Apartment[] = [
     bedrooms: 1,
     bathrooms: 1,
     sqft: 45,
+    maxGuests: 3,
     icalUrl: 'YOUR_SAPPHIRE_ICAL_URL_HERE',
     googleMapsEmbedUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2776.1951895238008!2d8.621751575418575!3d45.90740720375946!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785d85f4c91828b%3A0x2da0159c0edad093!2sVia%20Ronco%20S.%20Maria%2C%202%2C%2021014%20Laveno-Mombello%20VA!5e0!3m2!1sit!2sit!4v1766251081015!5m2!1sit!2sit',
     images: ['/images/sapphire/foto-sala.JPG',
@@ -89,6 +91,7 @@ export const APARTMENTS: Apartment[] = [
     bedrooms: 1,
     bathrooms: 1,
     sqft: 45,
+    maxGuests: 3,
     icalUrl: 'YOUR_COBALT_ICAL_URL_HERE',
     googleMapsEmbedUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11106.469538628786!2d8.642607051634423!3d45.898964948040216!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785d818b6619a69%3A0xbe185904dcfa784!2sVia%20Alpi%2C%209%2C%2021033%20Cittiglio%20VA!5e0!3m2!1sit!2sit!4v1766334152319!5m2!1sit!2sit',
     images: [ '/images/cobalt/cucina 1.png',
@@ -108,16 +111,25 @@ export const APARTMENTS: Apartment[] = [
   },
   {
     id: 'navy-garden-retreat',
-    name: { it: 'Navy Garden Retreat', en: 'Navy Garden Retreat', de: 'Navy Garden Retreat' },
-    tagline: { it: 'Relax nel verde a Cerro', en: 'Relax in the green in Cerro', de: 'Entspannung im Grünen' },
-    location: 'Cerro di Laveno',
-    price: 130,
+    name: { it: 'Cittiglio Le Cascate 2', en: 'Navy Garden Retreat', de: 'Navy Garden Retreat' },
+    tagline: { it: 'Nel pieno centro storico di Cittiglio', en: 'Relax in the green in Cerro', de: 'Entspannung im Grünen' },
+    location: 'Cittiglio Centro',
+    price: 80,
     bedrooms: 1,
     bathrooms: 1,
-    sqft: 55,
-    images: ['./img/navy/01.jpg'],
-    description: { it: 'Giardino privato vicino alla spiaggia.', en: 'Private garden near the beach.', de: 'Privater Garten am Strand.' },
-    amenities: { it: ['Giardino'], en: ['Garden'], de: ['Garten'] }
+    sqft: 45,
+    maxGuests: 3,
+    icalUrl: 'YOUR_NAVY_ICAL_URL_HERE',
+    googleMapsEmbedUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11106.469538628786!2d8.642607051634423!3d45.898964948040216!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785d818b6619a69%3A0xbe185904dcfa784!2sVia%20Alpi%2C%209%2C%2021033%20Cittiglio%20VA!5e0!3m2!1sit!2sit!4v1766334152319!5m2!1sit!2sit',
+    images: ['./images/navy/foto_sala.png',
+             './images/navy/foto_cucina.png',
+             './images/navy/foto_letto.png',
+             './images/navy/foto_bagno.png',
+             './images/navy/foto_bagno_2.jpg'],
+    description: { it: 'Appartamento Le Cascate si trova a Cittiglio a 33 km da Stazione Ferroviaria di Lugano, 35 km da Monastero di Torba e 35 km da Centro Esposizioni di Lugano. \nL’alloggio si trova a 20 km da Villa Panza e presenta il WiFi gratuito in tutta la struttura.\n\nQuesto appartamento prevede 1 camera da letto, 1 bagno, lenzuola, asciugamani, una TV a schermo piatto, una zona pranzo, una cucina con utensili e un patio con vista sulla montagna.\nStazione Ferroviaria di Mendrisio è a 38 km da questo appartamento, mentre Parco Swissminiatur si trova a 39 km di distanza. Aeroporto di Milano Malpensa si trova a 35 km dalla struttura.',
+       en: 'Private garden near the beach.', de: 'Privater Garten am Strand.' },
+    amenities: { it: ['Wi-Fi','Giardino','Cucina Completa', 'Parcheggio pubblico', 'Accessori Bambini' ,'Smart TV', 'Asciugamani e Lenzuola'],
+       en: ['Garden'], de: ['Garten'] }
   }
 ];
 
@@ -126,13 +138,14 @@ export const UI_LABELS: Translations = {
   nav_history: { it: 'Il Concept', en: 'The Concept', de: 'Das Konzept' },
   nav_contact: { it: 'Prenota Ora', en: 'Book Now', de: 'Jetzt Buchen' },
   houses_title: { it: 'Le Nostre Dimore', en: 'Our Residences', de: 'Unsere Residenzen' },
-  houses_subtitle: { it: 'Eleganza e comfort a due passi dal Lago Maggiore', en: 'Elegance and comfort steps away from the harbor.', de: 'Eleganz und Komfort nur wenige Schritte vom Hafen entfernt.' },
+  houses_subtitle: { it: 'Appartamenti completamente attrezzati, per garantire la massima indipendenza', en: 'Elegance and comfort steps away from the harbor.', de: 'Eleganz und Komfort nur wenige Schritte vom Hafen entfernt.' },
   price_from: { it: 'da', en: 'from', de: 'ab' },
   price_night: { it: '/ notte', en: '/ night', de: '/ Nacht' },
   exclusive_label: { it: 'Design Moderno', en: 'Modern Design', de: 'Modernes Design' },
   bedrooms: { it: 'Camere', en: 'Bedrooms', de: 'Schlafzimmer' },
   bathrooms: { it: 'Bagni', en: 'Bathrooms', de: 'Badezimmer' },
   living_space: { it: 'mq', en: 'sqm', de: 'qm' },
+  max_guests: { it: 'Ospiti Max', en: 'Max Guests', de: 'Max Gäste' },
   experience_title: { it: 'Dettagli e Comfort', en: 'Details & Comfort', de: 'Details & Komfort' },
   amenities_title: { it: 'Dotazioni inclusi', en: 'Included Amenities', de: 'Inklusive Ausstattung' },
   availability_title: { it: 'Calendario Disponibilità', en: 'Availability Calendar', de: 'Belegungsplan' },
@@ -153,7 +166,30 @@ export const UI_LABELS: Translations = {
   last_sync: { it: 'Aggiornato', en: 'Updated', de: 'Aktualisiert' },
   chat_welcome: { it: "Benvenuti al Blu di Laveno! Sono Elsa, il vostro concierge. Come posso aiutarvi?", en: "Welcome to Il Blu di Laveno! I'm Elsa, your concierge. How can I help you today?", de: "Willkommen im Il Blu di Laveno! Ich bin Elsa. Wie kann ich Ihnen helfen?" },
   contact_human: { it: "Parla con Elsa", en: "Talk to Elsa", de: "Kontakt con Elsa" },
-  contact_desc: { it: "Per prenotazioni dirette, gruppi o soggiorni lunghi, contattami direttamente su WhatsApp.", en: "For direct bookings, groups, or long stays, contact me directly via WhatsApp.", de: "Für Direktbuchungen, Gruppen oder Langzeitaufenthalte kontaktieren Sie mich direttamente per WhatsApp." }
+  contact_desc: { it: "Per prenotazioni dirette, gruppi o soggiorni lunghi, contattami direttamente su WhatsApp.", en: "For direct bookings, groups, or long stays, contact me directly via WhatsApp.", de: "Für Direktbuchungen, Gruppen oder Langzeitaufenthalte kontaktieren Sie mich direttamente per WhatsApp." },
+  distances_title: { it: 'Dove Siamo', en: 'Where We Are', de: 'Wo Wir Sind' },
+  distances_subtitle: { it: 'Perfetta posizione per esplorare la regione', en: 'Perfect location to explore the region', de: 'Perfekte Lage um die Region zu erkunden' }
+};
+
+export const DISTANCES = {
+  it: [
+    { place: 'Varese', distance: '15 km', time: '20 min', icon: '🏙️' },
+    { place: 'Malpensa', distance: '35 km', time: '40 min', icon: '✈️' },
+    { place: 'Verbania', distance: '25 km', time: '30 min', icon: '🏞️' },
+    { place: 'Svizzera', distance: '30 km', time: '35 min', icon: '🇨🇭' }
+  ],
+  en: [
+    { place: 'Varese', distance: '15 km', time: '20 min', icon: '🏙️' },
+    { place: 'Malpensa', distance: '35 km', time: '40 min', icon: '✈️' },
+    { place: 'Verbania', distance: '25 km', time: '30 min', icon: '🏞️' },
+    { place: 'Switzerland', distance: '30 km', time: '35 min', icon: '🇨🇭' }
+  ],
+  de: [
+    { place: 'Varese', distance: '15 km', time: '20 min', icon: '🏙️' },
+    { place: 'Malpensa', distance: '35 km', time: '40 min', icon: '✈️' },
+    { place: 'Verbania', distance: '25 km', time: '30 min', icon: '🏞️' },
+    { place: 'Schweiz', distance: '30 km', time: '35 min', icon: '🇨🇭' }
+  ]
 };
 
 export const STORY_CONTENT: StoryContent = {

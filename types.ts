@@ -46,6 +46,7 @@ export interface Apartment {
   bedrooms: number;
   bathrooms: number;
   sqft: number;
+  maxGuests: number;
   location: string;
   amenities: LocalizedArray;
   images: string[];
