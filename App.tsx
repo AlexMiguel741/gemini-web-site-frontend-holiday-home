@@ -40,7 +40,7 @@ const Lightbox: React.FC<{ images: string[]; isOpen: boolean; onClose: () => voi
   return (
     <div className="fixed inset-0 z-[300] bg-white animate-in fade-in duration-300 flex flex-col">
       <div className="h-16 sm:h-20 px-4 sm:px-6 flex items-center justify-between border-b border-slate-100 bg-white/80 backdrop-blur-md">
-        <button onClick={onClose} className="flex items-center gap-2 text-slate-900 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">
+        <button onClick={onClose} className="flex items-center gap-2 text-slate-900 font-bold uppercase text-[10px] tracking-widest hover:text-blue-700 transition-colors">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth={2.5}/></svg>
           {UI_LABELS.back[lang]}
         </button>
@@ -81,7 +81,7 @@ const Lightbox: React.FC<{ images: string[]; isOpen: boolean; onClose: () => voi
           <button 
             key={idx} 
             onClick={() => setCurrentIndex(idx)}
-            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${currentIndex === idx ? 'border-blue-600 scale-105 shadow-md' : 'border-transparent opacity-40 hover:opacity-100'}`}
+            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${currentIndex === idx ? 'border-blue-700 scale-105 shadow-md' : 'border-transparent opacity-40 hover:opacity-100'}`}
           >
             <img src={img} className="w-full h-full object-cover" alt="" />
           </button>
@@ -220,7 +220,7 @@ const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> =
             className += 'bg-slate-50 text-slate-200 border-transparent';
           } else if (today) {
             // Today - highlight it
-            className += 'bg-blue-600 text-white border-blue-700 shadow-md font-bold';
+            className += 'bg-blue-700 text-white border-blue-800 shadow-md font-bold';
           } else {
             // Available future dates
             className += 'bg-white text-slate-700 border-slate-50 shadow-sm hover:bg-slate-50';
@@ -238,12 +238,19 @@ const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> =
 };
 
 const App: React.FC = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [view, setView] = useState<View>('home');
   const [selectedAptId, setSelectedAptId] = useState<string | null>(null);
   const [lang, setLang] = useState<Language>('it');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 1.75;
+    }
+  }, []);
 
   const selectedApartment = APARTMENTS.find(a => a.id === selectedAptId);
 
@@ -280,7 +287,7 @@ const App: React.FC = () => {
         <button
           key={l}
           onClick={() => setLang(l)}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all ${lang === l ? 'bg-white text-blue-600 shadow-md scale-105' : 'text-slate-400 hover:text-slate-600'}`}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all ${lang === l ? 'bg-white text-blue-700 shadow-md scale-105' : 'text-slate-400 hover:text-slate-600'}`}
         >
           <img src={`https://flagcdn.com/w40/${l === 'en' ? 'gb' : l}.png`} alt={l} className="w-4 h-auto rounded-sm" />
           <span className="hidden xs:inline">{l}</span>
@@ -291,16 +298,20 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-white overflow-x-hidden relative">
-      <header className="sticky top-0 z-[100] bg-white/95 backdrop-blur-xl border-b border-slate-100 h-20 sm:h-28 flex items-center">
+      <header className="sticky top-0 z-[100] bg-white/95 backdrop-blur-xl border-b border-slate-100 h-32 sm:h-40 flex items-center">
         <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
           <div onClick={() => navigateTo('home')} className="cursor-pointer group flex items-center">
-            <span className="text-xl sm:text-2xl font-bold tracking-tighter text-slate-900 group-hover:text-blue-600 transition-colors">{SITE_CONFIG.name}</span>
+            <img
+              src="/images/logo.png"
+              alt={SITE_CONFIG.name}
+              className="h-20 sm:h-24 w-auto transition-all group-hover:scale-105"
+            />
           </div>
           <nav className="hidden md:flex gap-8 items-center text-[10px] font-bold uppercase tracking-widest text-slate-500">
             <LanguageSwitcher />
             <button onClick={() => navigateTo('home', undefined, 'stays')} className="hover:text-slate-900">{UI_LABELS.nav_residences[lang]}</button>
             <button onClick={() => navigateTo('story')} className="hover:text-slate-900">{UI_LABELS.nav_history[lang]}</button>
-            <button onClick={() => navigateTo('home', undefined, 'contact')} className="bg-slate-900 text-white px-6 py-2.5 rounded-xl hover:bg-blue-600 shadow-lg transition-all">{UI_LABELS.nav_contact[lang]}</button>
+            <button onClick={() => navigateTo('home', undefined, 'contact')} className="bg-slate-900 text-white px-6 py-2.5 rounded-xl hover:bg-blue-700 shadow-lg transition-all">{UI_LABELS.nav_contact[lang]}</button>
           </nav>
           <div className="flex items-center gap-4 md:hidden">
             <LanguageSwitcher />
@@ -315,22 +326,39 @@ const App: React.FC = () => {
         <div className="fixed inset-0 z-[90] bg-white pt-32 px-6 flex flex-col gap-8 animate-in fade-in slide-in-from-top-4 duration-300 md:hidden">
           <button onClick={() => navigateTo('home', undefined, 'stays')} className="text-2xl font-bold text-slate-900">{UI_LABELS.nav_residences[lang]}</button>
           <button onClick={() => navigateTo('story')} className="text-2xl font-bold text-slate-900">{UI_LABELS.nav_history[lang]}</button>
-          <button onClick={() => navigateTo('home', undefined, 'contact')} className="text-2xl font-bold text-blue-600">{UI_LABELS.nav_contact[lang]}</button>
+          <button onClick={() => navigateTo('home', undefined, 'contact')} className="text-2xl font-bold text-blue-700">{UI_LABELS.nav_contact[lang]}</button>
         </div>
       )}
 
       <main className="flex-1 w-full relative">
         {view === 'home' && (
           <div className="animate-in fade-in duration-700">
-            <section className="relative py-20 sm:py-32 px-6 lake-gradient text-center">
-              <div className="max-w-4xl mx-auto">
-                <span className="text-blue-600 font-bold tracking-[0.4em] uppercase text-[10px] mb-6 block">{HERO_SECTION.subtitle[lang]}</span>
-                <h1 className="text-4xl sm:text-7xl lg:text-8xl font-bold text-slate-900 mb-8 tracking-tighter leading-tight">
+            <section className="relative py-20 sm:py-32 px-6 lake-gradient text-center overflow-hidden">
+              {/* Background Video */}
+              <video
+                ref={videoRef}
+                className="absolute inset-0 w-full h-full object-cover opacity-90"
+                autoPlay
+                loop
+                muted
+                playsInline
+              >
+                <source src="/videos/lake-maggiore.mp4" type="video/mp4" />
+                {/* Fallback image if video doesn't load */}
+                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80&w=1200" alt="Lake Maggiore" className="w-full h-full object-cover" />
+              </video>
+
+              {/* Overlay for better text readability */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50"></div>
+
+              <div className="relative z-10 max-w-4xl mx-auto">
+                <span className="text-white font-bold tracking-[0.4em] uppercase text-[10px] mb-6 block drop-shadow-2xl">{HERO_SECTION.subtitle[lang]}</span>
+                <h1 className="text-5xl sm:text-8xl lg:text-9xl font-black text-white mb-8 tracking-tighter leading-tight drop-shadow-2xl">
                   {HERO_SECTION.title1[lang]} <br />
-                  <span className="serif italic font-normal text-blue-600">{HERO_SECTION.title2[lang]}</span>
+                  <span className="serif italic font-normal text-blue-700 drop-shadow-2xl">{HERO_SECTION.title2[lang]}</span>
                 </h1>
-                <p className="text-base sm:text-xl text-slate-500 mb-10 font-light max-w-2xl mx-auto" dangerouslySetInnerHTML={{ __html: HERO_SECTION.description[lang] }} />
-                <button onClick={() => navigateTo('home', undefined, 'stays')} className="bg-slate-900 text-white px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-blue-600 shadow-xl transition-all">
+                <p className="text-lg sm:text-2xl text-white mb-10 font-semibold max-w-2xl mx-auto drop-shadow-2xl" dangerouslySetInnerHTML={{ __html: HERO_SECTION.description[lang] }} />
+                <button onClick={() => navigateTo('home', undefined, 'stays')} className="bg-white text-slate-900 px-10 py-5 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-blue-700 shadow-2xl transition-all drop-shadow-2xl">
                   {HERO_SECTION.buttonLabel[lang]}
                 </button>
               </div>
@@ -359,7 +387,7 @@ const App: React.FC = () => {
                       <div className="text-6xl mb-6">{dist.icon}</div>
                       <h3 className="text-xl font-bold text-slate-900 mb-3">{dist.place}</h3>
                       <div className="space-y-1">
-                        <p className="text-lg font-semibold text-blue-600">{dist.distance}</p>
+                <p className="text-lg font-semibold text-blue-700">{dist.distance}</p>
                         <p className="text-sm text-slate-500">{dist.time}</p>
                       </div>
                     </div>
@@ -393,7 +421,7 @@ const App: React.FC = () => {
                 <h2 className="text-3xl sm:text-6xl font-bold mb-6 tracking-tighter">{UI_LABELS.contact_human[lang]}</h2>
                 <p className="text-slate-400 text-base sm:text-lg mb-10 font-light">{UI_LABELS.contact_desc[lang]}</p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch">
-                  <a href={`mailto:${SITE_CONFIG.email}`} className="bg-blue-600 px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-blue-500 transition-all flex items-center justify-center">Email {SITE_CONFIG.hostName}</a>
+                  <a href={`mailto:${SITE_CONFIG.email}`} className="bg-blue-700 px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-blue-600 transition-all flex items-center justify-center">Email {SITE_CONFIG.hostName}</a>
                   <a href={`https://wa.me/${SITE_CONFIG.whatsapp}`} target="_blank" rel="noopener noreferrer" className="bg-emerald-600 px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-emerald-500 transition-all flex items-center justify-center">WhatsApp Direct</a>
                 </div>
               </div>
@@ -452,7 +480,7 @@ const App: React.FC = () => {
                     onClick={() => openLightbox(0)}
                     className="absolute bottom-6 right-6 bg-white/95 backdrop-blur px-6 py-3 rounded-2xl shadow-xl border border-slate-200 flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-slate-900 hover:bg-white transition-all z-10"
                   >
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7" strokeWidth={2}/></svg>
+                    <svg className="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7" strokeWidth={2}/></svg>
                     {lang === 'it' ? 'Esplora Galleria' : lang === 'de' ? 'Galerie ansehen' : 'Explore Gallery'}
                   </button>
                 </div>
@@ -541,11 +569,11 @@ const App: React.FC = () => {
                     </div>
                   </div>
                   
-                  <a 
-                    href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=Ciao ${SITE_CONFIG.hostName}, vorrei prenotare: ${selectedApartment.name[lang]}`} 
-                    target="_blank" 
+                    <a
+                    href={`https://wa.me/${SITE_CONFIG.whatsapp}?text=Ciao ${SITE_CONFIG.hostName}, vorrei prenotare: ${selectedApartment.name[lang]}`}
+                    target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full bg-blue-600 py-6 rounded-2xl text-center font-bold uppercase tracking-widest text-xs hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/20 active:scale-[0.98]"
+                    className="block w-full bg-blue-700 py-6 rounded-2xl text-center font-bold uppercase tracking-widest text-xs hover:bg-blue-600 transition-all shadow-xl shadow-blue-500/20 active:scale-[0.98]"
                   >
                     {UI_LABELS.cta_btn[lang]}
                   </a>
@@ -589,7 +617,11 @@ const App: React.FC = () => {
 
       <footer className="py-20 border-t border-slate-50 bg-[#fdfdfd] shrink-0">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
-          <p className="text-2xl font-bold tracking-tighter mb-4 text-slate-900">{SITE_CONFIG.name}</p>
+          <img
+            src="/images/logo.png"
+            alt={SITE_CONFIG.name}
+            className="h-20 sm:h-24 w-auto mb-4"
+          />
           <div className="flex flex-wrap justify-center gap-6 mb-10 text-[10px] font-bold uppercase tracking-widest text-slate-400">
             <button onClick={() => navigateTo('home')} className="hover:text-slate-900 transition-colors">Home</button>
             <button onClick={() => navigateTo('story')} className="hover:text-slate-900 transition-colors">{UI_LABELS.nav_history[lang]}</button>
