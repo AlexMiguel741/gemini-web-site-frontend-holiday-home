@@ -1,0 +1,6 @@
+# Ignora tutte le immagini
+images/
+public/images/
+
+# Ignora tutti i video
+public/videos/

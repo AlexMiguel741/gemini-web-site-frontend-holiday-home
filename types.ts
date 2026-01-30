@@ -17,7 +17,9 @@ export interface SiteConfig {
   name: string;
   hostName: string;
   whatsapp: string;
+  whatsapp2: string;
   email: string;
+  email2: string;
   locationLabel: LocalizedString;
   homeMapEmbedUrl: string;
 }
@@ -52,11 +54,6 @@ export interface Apartment {
   images: string[];
   icalUrl?: string;
   googleMapsEmbedUrl?: string;
-}
-
-export interface ChatMessage {
-  role: 'user' | 'model';
-  content: string;
 }
 
 export interface Translations {

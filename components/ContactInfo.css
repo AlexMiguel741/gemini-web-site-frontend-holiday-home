@@ -1,0 +1,149 @@
+.contact-info-container {
+  padding: 32px;
+  background: linear-gradient(135deg, rgba(77,171,247,0.15), rgba(77,171,247,0.05));
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+  max-width: 400px;
+  margin: 0 auto;
+  border: 1px solid rgba(255,255,255,0.3);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.contact-info-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  transition: all 0.2s ease;
+}
+
+.contact-item:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateX(4px);
+}
+
+.contact-icon {
+  font-size: 1.5rem;
+  margin-right: 16px;
+  color: #4dabf7;
+  flex-shrink: 0;
+  padding: 8px;
+  background: rgba(77,171,247,0.1);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.contact-icon:hover {
+  background: rgba(77,171,247,0.2);
+  transform: scale(1.1);
+}
+
+.contact-text {
+  font-size: 1.1rem;
+  color: #ffffff;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Link generici nel testo */
+.contact-text a {
+  font-weight: 600;
+  color: #4dabf7; /* Light blue for better visibility on dark */
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.contact-label {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.phone-highlight {
+  display: inline-block;
+  padding: 12px 16px;
+  background-color: rgba(77, 171, 247, 0.2);
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.phone-highlight:hover {
+  background-color: rgba(77, 171, 247, 0.3);
+  transform: scale(1.05);
+}
+
+.contact-text a:hover {
+  color: #004494; /* Blu ancora più scuro in hover */
+  border-bottom-color: #004494;
+}
+
+/* Bottone Telefono - Stile "Call to Action" */
+.phone-number {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #ffffff;
+  background-color: #007bff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  text-decoration: none;
+  margin-top: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3);
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.phone-number:hover {
+  background-color: #0069d9;
+  text-decoration: none;
+  box-shadow: 0 6px 12px rgba(0, 105, 217, 0.4);
+  transform: translateY(-2px);
+}
+
+.contact-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-icon {
+  font-size: 1.5rem;
+  color: #4dabf7;
+  margin-right: 12px;
+  padding: 8px;
+  background: rgba(77,171,247,0.1);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.header-icon:hover {
+  background: rgba(77,171,247,0.2);
+  transform: scale(1.1);
+}
+
+.contact-title {
+  font-size: 1.5rem;
+  color: white;
+  margin: 0;
+}
+
+.contact-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  margin: 20px 0;
+}

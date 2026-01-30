@@ -1,0 +1,11 @@
+// Coding Style Guidelines
+1. Be concise
+2. Do not explain code unless asked
+3. Focus on code generation
+4. When editing files, output only the necessary changes  
+5. Avoid commenting obvious code
+6. Prefer self-documenting code structures
+7. Minimize line count
+8. Eliminate redundant documentation
+9. Keep diffs small and focused
+10. Optimize for readability over comments

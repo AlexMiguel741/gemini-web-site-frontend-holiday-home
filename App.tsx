@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { APARTMENTS, SITE_CONFIG, STORY_CONTENT, HERO_SECTION, UI_LABELS, DISTANCES } from './constants';
+import ContactInfo from './components/ContactInfo';
 import { Apartment, Language } from './types';
 import ApartmentCard from './components/ApartmentCard';
-import AIChatConcierge from './components/AIChatConcierge';
 import { fetchAndParseIcal, BookedRange } from './services/icalService';
 
 type View = 'home' | 'story' | 'property';
@@ -420,9 +420,13 @@ const App: React.FC = () => {
               <div className="max-w-3xl mx-auto px-6">
                 <h2 className="text-3xl sm:text-6xl font-bold mb-6 tracking-tighter">{UI_LABELS.contact_human[lang]}</h2>
                 <p className="text-slate-400 text-base sm:text-lg mb-10 font-light">{UI_LABELS.contact_desc[lang]}</p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch">
-                  <a href={`mailto:${SITE_CONFIG.email}`} className="bg-blue-700 px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-blue-600 transition-all flex items-center justify-center">Email {SITE_CONFIG.hostName}</a>
-                  <a href={`https://wa.me/${SITE_CONFIG.whatsapp}`} target="_blank" rel="noopener noreferrer" className="bg-emerald-600 px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-emerald-500 transition-all flex items-center justify-center">WhatsApp Direct</a>
+                <div className="bg-slate-800 rounded-xl p-6 max-w-md mx-auto">
+                  <ContactInfo 
+                    primaryEmail={SITE_CONFIG.email}
+                    secondaryEmail={SITE_CONFIG.email2}
+                    primaryPhone={SITE_CONFIG.whatsapp}
+                    secondaryPhone={SITE_CONFIG.whatsapp2}
+                  />
                 </div>
               </div>
             </section>
@@ -591,13 +595,15 @@ const App: React.FC = () => {
               </div>
             </section>
 
-            <Lightbox 
-              images={selectedApartment.images} 
-              isOpen={isLightboxOpen} 
-              onClose={() => setIsLightboxOpen(false)} 
-              startIndex={lightboxIndex}
-              lang={lang}
-            />
+            {selectedApartment && (
+              <Lightbox 
+                images={selectedApartment.images} 
+                isOpen={isLightboxOpen} 
+                onClose={() => setIsLightboxOpen(false)} 
+                startIndex={lightboxIndex}
+                lang={lang}
+              />
+            )}
           </div>
         )}
 
@@ -633,7 +639,6 @@ const App: React.FC = () => {
         </div>
       </footer>
 
-      <AIChatConcierge lang={lang} />
     </div>
   );
 };

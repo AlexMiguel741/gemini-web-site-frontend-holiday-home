@@ -3,9 +3,11 @@ import { Apartment, SiteConfig, StoryContent, HeroContent, Translations } from '
 
 export const SITE_CONFIG: SiteConfig = {
   name: 'Case Vacanze Lago Maggiore',
-  hostName: 'Elsa',
-  whatsapp: '393480325148',
+  hostName: 'Elsa & Aldo',
+  whatsapp: '+393480325148',
+  whatsapp2: '+393469718002',
   email: 'martinezelsa34@yahoo.it',
+  email2: 'caravelli.aldo@gmail.com',
   locationLabel: {
     it: 'Laveno-Mombello, Lago Maggiore',
     en: 'Laveno-Mombello, Lake Maggiore',
@@ -15,13 +17,13 @@ export const SITE_CONFIG: SiteConfig = {
 };
 
 export const HERO_SECTION: HeroContent = {
-  subtitle: { it: 'Vivere il Lago Maggiore', en: 'Living the Lake Blue', de: 'Leben im Blau des Sees' },
-  title1: { it: 'Case Vacanze', en: 'Elite Stays', de: 'Elite-Aufenthalte' },
+  subtitle: { it: 'Vivere il Lago Maggiore', en: 'Experience Lake Maggiore', de: 'Erlebe den Lago Maggiore' },
+  title1: { it: 'Case Vacanze', en: 'Holiday Homes', de: 'Ferienwohnungen' },
   title2: { it: 'Lago Maggiore', en: 'in Laveno.', de: 'in Laveno.' },
   description: {
     it: 'Scopri <strong class="font-bold text-blue-700">appartamenti indipendenti</strong>,<br>completamente moderni, arredati e confortevoli,<br>in posizioni <strong class="font-bold text-blue-700">strategiche</strong> a pochi minuti dal Lago Maggiore.<br>Vivi una vacanza senza pensieri tra lago e montagna.<br>La nostra gestione <strong class="font-bold text-blue-700">familiare</strong> garantisce un\'accoglienza calorosa e assistenza personale: siamo qui per te, davvero, quando ne hai bisogno.',
-    en: 'Discover four exclusive residences nestled in the picturesque heart of Laveno-Mombello. Immerse yourself in luxury, just moments from the shimmering waters of Lake Maggiore and convenient ferry access to the enchanting Borromean Islands.\n\nExperience personalized hospitality with our family-run management - we\'re truly here for you when you need us.',
-    de: 'Entdecken Sie vier exklusive Residenzen im malerischen Herzen von Laveno-Mombello. Tauchen Sie ein in Luxus, nur wenige Augenblicke von den glitzernden Wassern des Lago Maggiore und dem bequemen Fährenzugang zu den verzaubernden Borromäischen Inseln entfernt.\n\nErleben Sie persönliche Gastfreundschaft mit unserem familiengeführten Management - wir sind wirklich da, wenn Sie uns brauchen.'
+    en: 'Discover <strong class="font-bold text-blue-700">independent apartments</strong>,<br>completely modern, furnished and comfortable,<br>in <strong class="font-bold text-blue-700">strategic</strong> positions just minutes from Lake Maggiore.<br>Enjoy a carefree vacation between lake and mountain.<br>Our <strong class="font-bold text-blue-700">family</strong> management guarantees warm hospitality and personal assistance: we are here for you, really, when you need us.',
+    de: 'Entdecken Sie <strong class="font-bold text-blue-700">unabhängige Apartments</strong>,<br>vollständig modern, möbliert und komfortabel,<br>in <strong class="font-bold text-blue-700">strategischen</strong> Lagen nur wenige Minuten vom Lago Maggiore entfernt.<br>Genießen Sie einen sorgenfreien Urlaub zwischen See und Bergen.<br>Unsere <strong class="font-bold text-blue-700">familiäre</strong> Leitung garantiert herzliche Gastfreundschaft und persönliche Betreuung: wir sind wirklich für Sie da, wenn Sie uns brauchen.'
   },
   buttonLabel: { it: 'Vedi Disponibilità', en: 'Check Availability', de: 'Verfügbarkeit prüfen' }
 };
@@ -32,7 +34,7 @@ export const APARTMENTS: Apartment[] = [
     name: { it: 'Il Blu di Laveno', en: 'Azure Terrace Suite', de: 'Azure Terrace Suite' },
     tagline: { it: 'Posizione Strategica', en: 'Light, Color and Panoramic View', de: 'Licht, Farbe und Panoramablick' },
     location: 'Laveno Centro',
-    price: 130, 
+    price: 110, 
     bedrooms: 1,
     bathrooms: 1,
     sqft: 65,
@@ -50,20 +52,20 @@ export const APARTMENTS: Apartment[] = [
     description: { 
       it: "A 26 km da Villa Panza a Laveno, Il Blu di Laveno prevede un alloggio con vista sulla montagna, WiFi gratuito e parcheggio privato gratuito.\n\nLa struttura presenta la vista sul giardino e si trova a 38 km da Stazione Ferroviaria di Lugano e 40 km da Centro Esposizioni di Lugano.\n\nQuesto appartamento comprende 1 camera da letto, un soggiorno, una cucina con utensili, frigorifero e macchina da caffè, e 1 bagno con bidet e doccia.\n\nPresso questo appartamento troverete asciugamani e lenzuola in dotazione.\n\nAeroporto di Milano Malpensa si trova a 39 km dalla struttura.", 
       en: 'Located in the vibrant heart of Laveno, this apartment enchants with its Mediterranean colors. The main bedroom welcomes guests with a suggestive classic artistic touch, while the modern kitchen offers every comfort.', 
-      de: 'Im pulsierenden Herzen von Laveno gelegen, besticht dieses Apartment durch seine mediterranen Farben. Das Hauptschlafzimmer empfängt die Gäste con un suggestivo richiamo artistico classico.' 
+      de: 'Im pulsierenden Herzen von Laveno gelegen, besticht dieses Apartment durch seine mediterranen Farben. Das Hauptschlafzimmer empfängt die Gäste mit einem suggestiven klassischen künstlerischen Touch, während die moderne Küche jeden Komfort bietet.\n\nNur 26 km von der Villa Panza in Laveno entfernt, bietet Il Blu di Laveno Unterkunft mit Bergblick, kostenlosem WLAN und kostenlosem Privatparkplatz.\n\nDie Unterkunft bietet Gartenblick und liegt 38 km vom Bahnhof Lugano und 40 km vom Lugano Exhibition Center entfernt.\n\nDiese Wohnung umfasst 1 Schlafzimmer, ein Wohnzimmer, eine Küche mit Utensilien, Kühlschrank und Kaffeemaschine sowie 1 Badezimmer mit Bidet und Dusche.\n\nHandtücher und Bettwäsche werden in dieser Wohnung zur Verfügung gestellt.\n\nDer Flughafen Mailand Malpensa ist 39 km von der Unterkunft entfernt.' 
     },
     amenities: {
       it: ['Wi-Fi', 'Cucina Completa', 'Parcheggio gratuito', 'Accessori Bambini' ,'Smart TV', 'Asciugamani e Lenzuola'],
-      en: ['Fiber Wi-Fi', 'Full Kitchen', 'AC', 'Harbor Proximity', 'Smart TV'],
-      de: ['Glasfaser-WLAN', 'Vollküche', 'Klimaanlage', 'Hafennähe', 'Smart TV']
+      en: ['Fiber Wi-Fi', 'Full Kitchen', 'AC', 'Harbor Proximity', 'Smart TV', 'Towels and Bed Linen', 'Baby Accessories', 'Free Parking'],
+      de: ['Glasfaser-WLAN', 'Vollküche', 'Klimaanlage', 'Hafennähe', 'Smart TV', 'Handtücher und Bettwäsche', 'Babyzubehör', 'Kostenloser Parkplatz']
     }
   },
   {
     id: 'sapphire-studio-loft',
-    name: { it: 'Verso il Lago', en: 'Verso il Lago', de: 'Verso il Lago' },
+    name: { it: 'Verso il Lago', en: 'Sapphire Studio Loft', de: 'Sapphire Studio Loft' },
     tagline: { it: 'A due passi da Laveno Centro', en: 'Compact Elegance Waterfront', de: 'Kompakte Eleganz am Wasser' },
     location: 'Centro Laveno',
-    price: 125,
+    price: 110,
     bedrooms: 1,
     bathrooms: 1,
     sqft: 45,
@@ -76,11 +78,11 @@ export const APARTMENTS: Apartment[] = [
              '/images/sapphire/foto_letto.JPG',
               '/images/sapphire/foto_sala_3.JPG'
     ],
-    description: { it: 'Verso il Lago si trova a Laveno a 25 km da Villa Panza, 38 km da Stazione Ferroviaria di Lugano e 39 km da Monastero di Torba. La struttura presenta la vista sul giardino e il WiFi gratuito in tutta la struttura\n\nQuesto appartamento con balcone e vista sulla città offre 1 camera da letto, un soggiorno, una TV a schermo piatto, una cucina con frigorifero e piano cottura e 1 bagno con doccia.\n\nPresso questo appartamento troverete asciugamani e lenzuola tra i servizi disponibili.\n\n Centro Esposizioni di Lugano è a 40 km da questo appartamento, mentre Stazione Ferroviaria di Mendrisio si trova a 43 km dalla struttura.', 
-      en: 'Central position', 
-      de: 'Raffiniertes Design per coppie.' },
+    description: { it: 'Verso il Lago si trova a Laveno a 25 km da Villa Panza, 38 km da Stazione Ferroviaria di Lugano e 39 km da Monastero di Torba. La struttura presenta la vista sul giardino e il WiFi gratuito in tutta la struttura\n\nQuesto appartamento con balcone e vista sulla città offre 1 camera da letto, un soggiorno, una TV a schermo piatto, una cucina con frigorifero e piano cottura e 1 bagno con doccia.\n\nPresso questo appartamento troverete asciugamani e lenzuola tra i servizi disponibili.\n\n Centro Esposizioni di Lugano è a 40 km da questo appartamento, mentre Stazione Ferroviaria di Mendrisio si trova a 43 km dalla struttura.',
+      en: 'Located in Laveno, just 25 km from Villa Panza, 38 km from Lugano Railway Station and 39 km from Monastero di Torba. The property features garden views and free WiFi throughout.\n\nThis apartment with balcony and city views offers 1 bedroom, a living room, a flat-screen TV, a kitchen with refrigerator and stovetop, and 1 bathroom with shower.\n\nTowels and bed sheets are available at this apartment.\n\nLugano Exhibition Center is 40 km from this apartment, while Mendrisio Railway Station is 43 km away.\n\nMilan Malpensa Airport is 39 km from the property.',
+      de: 'Verso il Lago liegt in Laveno, nur 25 km von Villa Panza, 38 km vom Bahnhof Lugano und 39 km vom Monastero di Torba entfernt. Die Unterkunft bietet Gartenblick und kostenloses WLAN im gesamten Gebäude.\n\nDiese Wohnung mit Balkon und Stadtblick bietet 1 Schlafzimmer, ein Wohnzimmer, einen Flachbildfernseher, eine Küche mit Kühlschrank und Kochplatte sowie 1 Badezimmer mit Dusche.\n\nHandtücher und Bettwäsche sind in dieser Wohnung verfügbar.\n\nDas Lugano Exhibition Center ist 40 km von dieser Wohnung entfernt, während der Bahnhof Mendrisio 43 km entfernt ist.' },
     amenities: { it: ['Wi-Fi', 'Cucina Completa', 'Parcheggio pubblico', 'Accessori Bambini' ,'Smart TV', 'Asciugamani e Lenzuola']
-      , en: ['Self Check-in'], de: ['Self Check-in'] }
+      , en: ['Wi-Fi', 'Full Kitchen', 'Public Parking', 'Baby Accessories', 'Smart TV', 'Towels and Bed Sheets'], de: ['WLAN', 'Voll ausgestattete Küche', 'Öffentlicher Parkplatz', 'Babyzubehör', 'Smart TV', 'Handtücher und Bettwäsche'] }
   },
   {
     id: 'cobalt-family-home',
@@ -102,12 +104,12 @@ export const APARTMENTS: Apartment[] = [
               '/images/cobalt/bagno1.png',
               '/images/cobalt/bagno2.png'
             ],
-    description: { it: 'Ubicato a Cittiglio, a 20 km da Villa Panza, 33 km da Stazione Ferroviaria di Lugano e 35 km da Monastero di Torba, Appartamento Le Cascate 1° Piano è un alloggio che propone balcone e WiFi gratuito.\n\n Questo appartamento è a 35 km da Centro Esposizioni di Lugano e 38 km da Stazione Ferroviaria di Mendrisio.\n\n Questo appartamento con 1 camera da letto presenta un soggiorno con TV a schermo piatto, una cucina con utensili e 1 bagno.\n\n Parco Swissminiatur è a 39 km da questo appartamento, mentre Monte San Giorgio si trova a 45 km dalla struttura.\n Aeroporto di Milano Malpensa si trova a 35 km di distanza.'
-      , en: 'Ideal for families.'
-      , de: 'Ideal für Familien.' },
+    description: { it: 'Ubicato a Cittiglio, a 20 km da Villa Panza, 33 km da Stazione Ferroviaria di Lugano e 35 km da Monastero di Torba, Appartamento Le Cascate 1° Piano è un alloggio che propone balcone e WiFi gratuito.\n\n Questo appartamento è a 35 km da Centro Esposizioni di Lugano e 38 km da Stazione Ferroviaria di Mendrisio.\n\n Questo appartamento con 1 camera da letto presenta un soggiorno con TV a schermo piatto, uma cucina con utensili e 1 bagno.\n\n Parco Swissminiatur è a 39 km da questo appartamento, mentre Monte San Giorgio si trova a 45 km dalla struttura.\n Aeroporto di Milano Malpensa si trova a 35 km di distanza.'
+      , en: 'Located in Cittiglio, 20 km from Villa Panza, 33 km from Lugano Railway Station and 35 km from Monastero di Torba, the 1st Floor Le Cascate Apartment offers accommodation with balcony and free WiFi.\n\nThis apartment is 35 km from Lugano Exhibition Center and 38 km from Mendrisio Railway Station.\n\nThis 1-bedroom apartment features a living room with flat-screen TV, kitchen with utensils and 1 bathroom.\n\nSwissminiatur Park is 39 km from this apartment, while Monte San Giorgio is 45 km away.\nMilan Malpensa Airport is 35 km away.\n\nPerfect for families looking for a comfortable base to explore the Lake Maggiore region.'
+      , de: 'Das Apartment Le Cascate 1. Stock liegt in Cittiglio, 20 km von Villa Panza, 33 km vom Bahnhof Lugano und 35 km vom Monastero di Torba entfernt und bietet Unterkunft mit Balkon und kostenlosem WLAN.\n\nDieses Apartment ist 35 km vom Lugano Exhibition Center und 38 km vom Bahnhof Mendrisio entfernt.\n\nDieses 1-Schlafzimmer-Apartment verfügt über ein Wohnzimmer mit Flachbildfernseher, Küche mit Utensilien und 1 Badezimmer.\n\nDer Swissminiatur Park ist 39 km von diesem Apartment entfernt, während der Monte San Giorgio 45 km entfernt ist.\nDer Flughafen Mailand Malpensa ist 35 km entfernt.' },
     amenities: { it: ['Wi-Fi','Balcone','Cucina Completa', 'Parcheggio pubblico', 'Accessori Bambini' ,'Smart TV', 'Asciugamani e Lenzuola'], 
-      en: ['2 Bathrooms'], 
-      de: ['2 Badezimmer'] }
+      en: ['Wi-Fi', 'Balcony', 'Full Kitchen', 'Public Parking', 'Baby Accessories', 'Smart TV', 'Towels and Bed Linen'], 
+      de: ['WLAN', 'Balkon', 'Voll ausgestattete Küche', 'Öffentlicher Parkplatz', 'Babyzubehör', 'Smart TV', 'Handtücher und Bettwäsche'] }
   },
   {
     id: 'navy-garden-retreat',
@@ -121,15 +123,17 @@ export const APARTMENTS: Apartment[] = [
     maxGuests: 3,
     icalUrl: 'YOUR_NAVY_ICAL_URL_HERE',
     googleMapsEmbedUrl:'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11106.469538628786!2d8.642607051634423!3d45.898964948040216!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4785d818b6619a69%3A0xbe185904dcfa784!2sVia%20Alpi%2C%209%2C%2021033%20Cittiglio%20VA!5e0!3m2!1sit!2sit!4v1766334152319!5m2!1sit!2sit',
-    images: ['./images/navy/foto_sala.png',
-             './images/navy/foto_cucina.png',
-             './images/navy/foto_letto.png',
-             './images/navy/foto_bagno.png',
-             './images/navy/foto_bagno_2.jpg'],
+    images: ['/images/navy/foto_sala.png',
+             '/images/navy/foto_cucina.png',
+             '/images/navy/foto_letto.png',
+             '/images/navy/foto_bagno.png',
+             '/images/navy/foto_bagno_2.jpg'],
     description: { it: 'Appartamento Le Cascate si trova a Cittiglio a 33 km da Stazione Ferroviaria di Lugano, 35 km da Monastero di Torba e 35 km da Centro Esposizioni di Lugano. \nL’alloggio si trova a 20 km da Villa Panza e presenta il WiFi gratuito in tutta la struttura.\n\nQuesto appartamento prevede 1 camera da letto, 1 bagno, lenzuola, asciugamani, una TV a schermo piatto, una zona pranzo, una cucina con utensili e un patio con vista sulla montagna.\nStazione Ferroviaria di Mendrisio è a 38 km da questo appartamento, mentre Parco Swissminiatur si trova a 39 km di distanza. Aeroporto di Milano Malpensa si trova a 35 km dalla struttura.',
-       en: 'Private garden near the beach.', de: 'Privater Garten am Strand.' },
+       en: 'Le Cascate Apartment is located in Cittiglio, 33 km from Lugano Railway Station, 35 km from Monastero di Torba and 35 km from Lugano Exhibition Center. The accommodation is 20 km from Villa Panza and features free WiFi throughout the property.\n\nThis apartment offers 1 bedroom, 1 bathroom, bed sheets, towels, a flat-screen TV, a dining area, a kitchen with utensils and a patio with mountain views.\n\nMendrisio Railway Station is 38 km from this apartment, while Swissminiatur Park is 39 km away. Milan Malpensa Airport is 35 km from the property.',
+       de: 'Das Apartment Le Cascate liegt in Cittiglio, 33 km vom Bahnhof Lugano, 35 km vom Monastero di Torba und 35 km vom Lugano Exhibition Center entfernt. Die Unterkunft ist 20 km von Villa Panza entfernt und bietet kostenloses WLAN im gesamten Gebäude.\n\nDieses Apartment bietet 1 Schlafzimmer, 1 Badezimmer, Bettwäsche, Handtücher, einen Flachbildfernseher, einen Essbereich, eine Küche mit Utensilien und eine Terrasse mit Bergblick.\n\nDer Bahnhof Mendrisio ist 38 km von diesem Apartment entfernt, während der Swissminiatur Park 39 km entfernt ist. Der Flughafen Mailand Malpensa ist 35 km von der Unterkunft entfernt.' },
     amenities: { it: ['Wi-Fi','Giardino','Cucina Completa', 'Parcheggio pubblico', 'Accessori Bambini' ,'Smart TV', 'Asciugamani e Lenzuola'],
-       en: ['Garden'], de: ['Garten'] }
+       en: ['Wi-Fi', 'Garden', 'Full Kitchen', 'Public Parking', 'Baby Accessories', 'Smart TV', 'Towels and Bed Linen'], 
+       de: ['WLAN', 'Garten', 'Voll ausgestattete Küche', 'Öffentlicher Parkplatz', 'Babyzubehör', 'Smart TV', 'Handtücher und Bettwäsche'] }
   }
 ];
 
@@ -164,9 +168,12 @@ export const UI_LABELS: Translations = {
   available: { it: 'Libero', en: 'Available', de: 'Frei' },
   booked: { it: 'Occupato', en: 'Booked', de: 'Belegt' },
   last_sync: { it: 'Aggiornato', en: 'Updated', de: 'Aktualisiert' },
-  chat_welcome: { it: "Benvenuti al Blu di Laveno! Sono Elsa, il vostro concierge. Come posso aiutarvi?", en: "Welcome to Il Blu di Laveno! I'm Elsa, your concierge. How can I help you today?", de: "Willkommen im Il Blu di Laveno! Ich bin Elsa. Wie kann ich Ihnen helfen?" },
-  contact_human: { it: "Parla con Elsa", en: "Talk to Elsa", de: "Kontakt con Elsa" },
-  contact_desc: { it: "Per prenotazioni dirette, gruppi o soggiorni lunghi, contattami direttamente su WhatsApp.", en: "For direct bookings, groups, or long stays, contact me directly via WhatsApp.", de: "Für Direktbuchungen, Gruppen oder Langzeitaufenthalte kontaktieren Sie mich direttamente per WhatsApp." },
+  contact_human: { it: "Parla con Noi", en: "Talk to Us", de: "Kontakt mit uns" },
+  contact_desc: { 
+    it: "Per prenotazioni dirette, gruppi o soggiorni lunghi, contattaci direttamente:", 
+    en: "For direct bookings, groups or long stays, contact us directly:", 
+    de: "Für Direktbuchungen, Gruppen oder Langzeitaufenthalte kontaktieren Sie uns direkt:" 
+  },
   distances_title: { it: 'Distanze da Laveno', en: 'Laveno Distances', de: 'Wo Wir Sind' },
   distances_subtitle: { it: 'Perfetta posizione per esplorare la regione', en: 'Perfect location to explore the region', de: 'Perfekte Lage um die Region zu erkunden' }
 };
