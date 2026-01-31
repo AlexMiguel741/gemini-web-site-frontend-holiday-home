@@ -20,7 +20,7 @@ export const SITE_CONFIG: SiteConfig = {
 export const HERO_SECTION: HeroContent = {
   subtitle: { it: 'Vivere il Lago Maggiore', en: 'Experience Lake Maggiore', de: 'Erlebe den Lago Maggiore' },
   title1: { it: 'Case Vacanze', en: 'Holiday Homes', de: 'Ferienwohnungen' },
-  title2: { it: 'Lago Maggiore', en: 'in Laveno.', de: 'in Laveno.' },
+  title2: { it: 'Lago Maggiore', en: 'Lake Maggiore', de: 'Lago Maggiore' },
   description: {
     it: 'Scopri <strong class="font-bold text-blue-700">appartamenti indipendenti</strong>,<br>completamente moderni, arredati e confortevoli,<br>in posizioni <strong class="font-bold text-blue-700">strategiche</strong> a pochi minuti dal Lago Maggiore.<br>Vivi una vacanza senza pensieri tra lago e montagna.<br>La nostra gestione <strong class="font-bold text-blue-700">familiare</strong> garantisce un\'accoglienza calorosa e assistenza personale: siamo qui per te, davvero, quando ne hai bisogno.',
     en: 'Discover <strong class="font-bold text-blue-700">independent apartments</strong>,<br>completely modern, furnished and comfortable,<br>in <strong class="font-bold text-blue-700">strategic</strong> positions just minutes from Lake Maggiore.<br>Enjoy a carefree vacation between lake and mountain.<br>Our <strong class="font-bold text-blue-700">family</strong> management guarantees warm hospitality and personal assistance: we are here for you, really, when you need us.',
@@ -32,8 +32,8 @@ export const HERO_SECTION: HeroContent = {
 export const APARTMENTS: Apartment[] = [
   {
     id: 'azure-terrace-suite',
-    name: { it: 'Il Blu di Laveno', en: 'Azure Terrace Suite', de: 'Azure Terrace Suite' },
-    tagline: { it: 'Posizione Strategica', en: 'Light, Color and Panoramic View', de: 'Licht, Farbe und Panoramablick' },
+    name: { it: 'Il Blu di Laveno', en: 'Laveno Blue', de: 'Laveno Blau' },
+    tagline: { it: 'Posizione Strategica', en: 'Strategic Position', de: 'Strategische Lage' },
     location: 'Laveno Centro',
     price: 110, 
     bedrooms: 1,
@@ -52,19 +52,19 @@ export const APARTMENTS: Apartment[] = [
     ],
     description: { 
       it: "A 26 km da Villa Panza a Laveno, Il Blu di Laveno prevede un alloggio con vista sulla montagna, WiFi gratuito e parcheggio privato gratuito.\n\nLa struttura presenta la vista sul giardino e si trova a 38 km da Stazione Ferroviaria di Lugano e 40 km da Centro Esposizioni di Lugano.\n\nQuesto appartamento comprende 1 camera da letto, un soggiorno, una cucina con utensili, frigorifero e macchina da caffè, e 1 bagno con bidet e doccia.\n\nPresso questo appartamento troverete asciugamani e lenzuola in dotazione.\n\nAeroporto di Milano Malpensa si trova a 39 km dalla struttura.", 
-      en: 'Located in the vibrant heart of Laveno, this apartment enchants with its Mediterranean colors. The main bedroom welcomes guests with a suggestive classic artistic touch, while the modern kitchen offers every comfort.', 
-      de: 'Im pulsierenden Herzen von Laveno gelegen, besticht dieses Apartment durch seine mediterranen Farben. Das Hauptschlafzimmer empfängt die Gäste mit einem suggestiven klassischen künstlerischen Touch, während die moderne Küche jeden Komfort bietet.\n\nNur 26 km von der Villa Panza in Laveno entfernt, bietet Il Blu di Laveno Unterkunft mit Bergblick, kostenlosem WLAN und kostenlosem Privatparkplatz.\n\nDie Unterkunft bietet Gartenblick und liegt 38 km vom Bahnhof Lugano und 40 km vom Lugano Exhibition Center entfernt.\n\nDiese Wohnung umfasst 1 Schlafzimmer, ein Wohnzimmer, eine Küche mit Utensilien, Kühlschrank und Kaffeemaschine sowie 1 Badezimmer mit Bidet und Dusche.\n\nHandtücher und Bettwäsche werden in dieser Wohnung zur Verfügung gestellt.\n\nDer Flughafen Mailand Malpensa ist 39 km von der Unterkunft entfernt.' 
+      en: 'Located 26 km from Villa Panza in Laveno, Il Blu di Laveno offers accommodation with mountain views, free WiFi and free private parking.\n\nThe property features garden views and is located 38 km from Lugano Railway Station and 40 km from Lugano Exhibition Center.\n\nThis apartment includes 1 bedroom, a living room, a kitchen with utensils, refrigerator and coffee machine, and 1 bathroom with bidet and shower.\n\nTowels and bed sheets are provided at this apartment.\n\nMilan Malpensa Airport is 39 km from the property.',
+      de: '26 km von Villa Panza in Laveno entfernt bietet Il Blu di Laveno Unterkunft mit Bergblick, kostenlosem WLAN und kostenlosem Privatparkplatz.\n\nDie Unterkunft bietet Gartenblick und liegt 38 km vom Bahnhof Lugano und 40 km vom Lugano Exhibition Center entfernt.\n\nDiese Wohnung umfasst 1 Schlafzimmer, ein Wohnzimmer, eine Küche mit Utensilien, Kühlschrank und Kaffeemaschine sowie 1 Badezimmer mit Bidet und Dusche.\n\nHandtücher und Bettwäsche werden in dieser Wohnung zur Verfügung gestellt.\n\nDer Flughafen Mailand Malpensa ist 39 km von der Unterkunft entfernt.'
     },
     amenities: {
       it: ['Wi-Fi', 'Cucina Completa', 'Parcheggio gratuito', 'Accessori Bambini' ,'Smart TV', 'Asciugamani e Lenzuola'],
-      en: ['Fiber Wi-Fi', 'Full Kitchen', 'AC', 'Harbor Proximity', 'Smart TV', 'Towels and Bed Linen', 'Baby Accessories', 'Free Parking'],
-      de: ['Glasfaser-WLAN', 'Vollküche', 'Klimaanlage', 'Hafennähe', 'Smart TV', 'Handtücher und Bettwäsche', 'Babyzubehör', 'Kostenloser Parkplatz']
+      en: ['Wi-Fi', 'Full Kitchen', 'Free Parking', 'Baby Accessories', 'Smart TV', 'Towels and Bed Linen'],
+      de: ['WLAN', 'Voll ausgestattete Küche', 'Kostenloser Parkplatz', 'Babyzubehör', 'Smart TV', 'Handtücher und Bettwäsche']
     }
   },
   {
     id: 'sapphire-studio-loft',
-    name: { it: 'Verso il Lago', en: 'Sapphire Studio Loft', de: 'Sapphire Studio Loft' },
-    tagline: { it: 'A due passi da Laveno Centro', en: 'Compact Elegance Waterfront', de: 'Kompakte Eleganz am Wasser' },
+    name: { it: 'Verso il Lago', en: 'Facing the Lake', de: 'Zum See' },
+    tagline: { it: 'A due passi da Laveno Centro', en: 'Just steps from Laveno Center', de: 'Nur wenige Schritte vom Laveno-Zentrum' },
     location: 'Centro Laveno',
     price: 110,
     bedrooms: 1,
@@ -87,8 +87,8 @@ export const APARTMENTS: Apartment[] = [
   },
   {
     id: 'cobalt-family-home',
-    name: { it: 'Cittiglio Le Cascate', en: 'Cobalt Family Home', de: 'Cobalt Family Home' },
-    tagline: { it: 'Nel pieno centro storico di Cittiglio', en: 'Space for the whole family', de: 'Platz für die ganze Familie' },
+    name: { it: 'Cittiglio Le Cascate', en: 'Cittiglio Waterfalls', de: 'Cittiglio Wasserfälle' },
+    tagline: { it: 'Nel pieno centro storico di Cittiglio', en: 'In the heart of Cittiglio\'s historic center', de: 'Im Herzen des historischen Zentrums von Cittiglio' },
     location: 'Zona borgo storico Cittiglio',
     price: 90,
     bedrooms: 1,
@@ -106,7 +106,7 @@ export const APARTMENTS: Apartment[] = [
               '/images/cobalt/bagno2.png'
             ],
     description: { it: 'Ubicato a Cittiglio, a 20 km da Villa Panza, 33 km da Stazione Ferroviaria di Lugano e 35 km da Monastero di Torba, Appartamento Le Cascate 1° Piano è un alloggio che propone balcone e WiFi gratuito.\n\n Questo appartamento è a 35 km da Centro Esposizioni di Lugano e 38 km da Stazione Ferroviaria di Mendrisio.\n\n Questo appartamento con 1 camera da letto presenta un soggiorno con TV a schermo piatto, uma cucina con utensili e 1 bagno.\n\n Parco Swissminiatur è a 39 km da questo appartamento, mentre Monte San Giorgio si trova a 45 km dalla struttura.\n Aeroporto di Milano Malpensa si trova a 35 km di distanza.'
-      , en: 'Located in Cittiglio, 20 km from Villa Panza, 33 km from Lugano Railway Station and 35 km from Monastero di Torba, the 1st Floor Le Cascate Apartment offers accommodation with balcony and free WiFi.\n\nThis apartment is 35 km from Lugano Exhibition Center and 38 km from Mendrisio Railway Station.\n\nThis 1-bedroom apartment features a living room with flat-screen TV, kitchen with utensils and 1 bathroom.\n\nSwissminiatur Park is 39 km from this apartment, while Monte San Giorgio is 45 km away.\nMilan Malpensa Airport is 35 km away.\n\nPerfect for families looking for a comfortable base to explore the Lake Maggiore region.'
+      , en: 'Located in Cittiglio, 20 km from Villa Panza, 33 km from Lugano Railway Station and 35 km from Monastero di Torba, the 1st Floor Le Cascate Apartment offers accommodation with balcony and free WiFi.\n\nThis apartment is 35 km from Lugano Exhibition Center and 38 km from Mendrisio Railway Station.\n\nThis 1-bedroom apartment features a living room with flat-screen TV, kitchen with utensils and 1 bathroom.\n\nSwissminiatur Park is 39 km from this apartment, while Monte San Giorgio is 45 km away.\nMilan Malpensa Airport is 35 km away.'
       , de: 'Das Apartment Le Cascate 1. Stock liegt in Cittiglio, 20 km von Villa Panza, 33 km vom Bahnhof Lugano und 35 km vom Monastero di Torba entfernt und bietet Unterkunft mit Balkon und kostenlosem WLAN.\n\nDieses Apartment ist 35 km vom Lugano Exhibition Center und 38 km vom Bahnhof Mendrisio entfernt.\n\nDieses 1-Schlafzimmer-Apartment verfügt über ein Wohnzimmer mit Flachbildfernseher, Küche mit Utensilien und 1 Badezimmer.\n\nDer Swissminiatur Park ist 39 km von diesem Apartment entfernt, während der Monte San Giorgio 45 km entfernt ist.\nDer Flughafen Mailand Malpensa ist 35 km entfernt.' },
     amenities: { it: ['Wi-Fi','Balcone','Cucina Completa', 'Parcheggio pubblico', 'Accessori Bambini' ,'Smart TV', 'Asciugamani e Lenzuola'], 
       en: ['Wi-Fi', 'Balcony', 'Full Kitchen', 'Public Parking', 'Baby Accessories', 'Smart TV', 'Towels and Bed Linen'], 
@@ -114,8 +114,8 @@ export const APARTMENTS: Apartment[] = [
   },
   {
     id: 'navy-garden-retreat',
-    name: { it: 'Cittiglio Le Cascate 2', en: 'Navy Garden Retreat', de: 'Navy Garden Retreat' },
-    tagline: { it: 'Nel pieno centro storico di Cittiglio', en: 'Relax in the green in Cerro', de: 'Entspannung im Grünen' },
+    name: { it: 'Cittiglio Le Cascate 2', en: 'Cittiglio Waterfalls 2', de: 'Cittiglio Wasserfälle 2' },
+    tagline: { it: 'Nel pieno centro storico di Cittiglio', en: 'In the heart of Cittiglio\'s historic center', de: 'Im Herzen des historischen Zentrums von Cittiglio' },
     location: 'Cittiglio Centro',
     price: 80,
     bedrooms: 1,
