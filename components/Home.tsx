@@ -63,7 +63,8 @@ const Home: React.FC<HomeProps> = ({ lang, scrollToAnchor }) => {
         {/* Background Video */}
         <video
           ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover opacity-90"
+          className="absolute inset-0 w-full h-full object-cover opacity-95"
+          style={{ filter: 'saturate(2.0) contrast(1.3) brightness(1.2)' }}
           autoPlay
           loop
           muted
@@ -75,7 +76,7 @@ const Home: React.FC<HomeProps> = ({ lang, scrollToAnchor }) => {
         </video>
 
         {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/10 to-black/10"></div>
 
         <div className="relative z-10 max-w-4xl mx-auto">
           <span className="text-white font-bold tracking-[0.4em] uppercase text-[10px] mb-6 block drop-shadow-2xl">{HERO_SECTION.subtitle[lang]}</span>
@@ -130,15 +131,17 @@ const Home: React.FC<HomeProps> = ({ lang, scrollToAnchor }) => {
             <h2 className="text-2xl sm:text-4xl font-bold mb-2 tracking-tight">{UI_LABELS.neighborhood_title[lang]}</h2>
             <p className="text-[var(--color-text-secondary)] serif italic">{SITE_CONFIG.locationLabel[lang]}</p>
           </div>
-          <div className="rounded-[3rem] overflow-hidden shadow-2xl bg-white border border-[var(--color-border-light)] aspect-video min-h-[400px]">
-            <iframe
-              title="Laveno Map"
-              src={SITE_CONFIG.homeMapEmbedUrl}
-              className="w-full h-full grayscale-[0.2]"
-              style={{ border: 0 }}
-              allowFullScreen={true}
-              loading="lazy"
-            ></iframe>
+          <div className="w-full max-w-[100vw] overflow-hidden">
+            <div className="rounded-[3rem] overflow-hidden shadow-2xl bg-white border border-[var(--color-border-light)] aspect-video min-h-[400px]">
+              <iframe
+                title="Laveno Map"
+                src={SITE_CONFIG.homeMapEmbedUrl}
+                className="w-full h-full grayscale-[0.2]"
+                style={{ border: 0 }}
+                allowFullScreen={true}
+                loading="lazy"
+              ></iframe>
+            </div>
           </div>
         </div>
       </section>

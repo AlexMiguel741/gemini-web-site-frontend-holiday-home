@@ -19,6 +19,10 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ lang, formatPriceFull }
 
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [mobileGalleryIndex, setMobileGalleryIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index);
@@ -27,6 +31,70 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ lang, formatPriceFull }
 
   const onCloseLightbox = () => {
     setIsLightboxOpen(false);
+  };
+
+  const SWIPE_THRESHOLD = 50;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => e.preventDefault();
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+
+    const distance = touchStart - e.changedTouches[0].clientX;
+    const isLeftSwipe = distance > SWIPE_THRESHOLD;
+    const isRightSwipe = distance < -SWIPE_THRESHOLD;
+
+    if (isLeftSwipe && mobileGalleryIndex < selectedApartment.images.length - 1) {
+      setMobileGalleryIndex((prev) => prev + 1);
+    } else if (isRightSwipe && mobileGalleryIndex > 0) {
+      setMobileGalleryIndex((prev) => prev - 1);
+    }
+
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setTouchEnd(null);
+    setTouchStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (!isDragging || !touchStart) {
+      setIsDragging(false);
+      return;
+    }
+
+    const distance = touchStart - e.clientX;
+    const isLeftSwipe = distance > SWIPE_THRESHOLD;
+    const isRightSwipe = distance < -SWIPE_THRESHOLD;
+
+    if (isLeftSwipe && mobileGalleryIndex < selectedApartment.images.length - 1) {
+      setMobileGalleryIndex((prev) => prev + 1);
+    } else if (isRightSwipe && mobileGalleryIndex > 0) {
+      setMobileGalleryIndex((prev) => prev - 1);
+    }
+
+    setIsDragging(false);
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+    setTouchStart(null);
+    setTouchEnd(null);
   };
 
   if (!selectedApartment) {
@@ -115,17 +183,42 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ lang, formatPriceFull }
           {/* GALLERIA DINAMICA STABILIZZATA */}
           <div className="relative group min-h-[300px] sm:min-h-0">
             {/* Vista Mobile: Slider */}
-            <div className="md:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-4 px-4 h-[350px]">
-              {selectedApartment.images.map((img, idx) => (
-                <div key={idx} className="snap-center shrink-0 w-[85vw] h-full">
-                  <SmartImage
-                    src={img}
-                    alt={`${selectedApartment.name[lang]} - ${lang === 'it' ? 'Immagine' : lang === 'en' ? 'Image' : 'Bild'} ${idx + 1}`}
-                    className="w-full h-full rounded-2xl shadow-lg border border-[var(--color-border-light)]"
-                    onClick={() => openLightbox(idx)}
+            <div className="md:hidden relative overflow-hidden -mx-4 px-4 h-[350px]">
+              <div
+                className="flex gap-4 h-full transition-transform duration-300 ease-out"
+                style={{ transform: `translateX(-${mobileGalleryIndex * (85 + 16)}vw)` }}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+              >
+                {selectedApartment.images.map((img, idx) => (
+                  <div key={idx} className="shrink-0 w-[85vw] h-full" style={{ userSelect: 'none' }}>
+                    <SmartImage
+                      src={img}
+                      alt={`${selectedApartment.name[lang]} - ${lang === 'it' ? 'Immagine' : lang === 'en' ? 'Image' : 'Bild'} ${idx + 1}`}
+                      className="w-full h-full rounded-2xl shadow-lg border border-[var(--color-border-light)] cursor-pointer"
+                      onClick={() => openLightbox(idx)}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Navigation dots */}
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                {selectedApartment.images.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setMobileGalleryIndex(idx)}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      idx === mobileGalleryIndex ? 'bg-white shadow-lg' : 'bg-white/50'
+                    }`}
                   />
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
             {/* Vista Desktop: Mosaico con aspect-ratio bloccato */}
@@ -216,20 +309,22 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ lang, formatPriceFull }
 
           <div className="space-y-8">
             <h3 className="text-[var(--color-text-main)] font-bold text-2xl tracking-tight">{UI_LABELS.neighborhood_title[lang]}</h3>
-            <div className="rounded-[2.5rem] overflow-hidden border border-[var(--color-border-light)] shadow-xl w-full aspect-video min-h-[400px]">
-              {selectedApartment.googleMapsEmbedUrl ? (
-                <iframe
-                  title={`Location of ${selectedApartment.name[lang]}`}
-                  src={selectedApartment.googleMapsEmbedUrl}
-                  className="w-full h-full border-0 grayscale-[0.2]"
-                  allowFullScreen={true}
-                  loading="lazy"
-                ></iframe>
-              ) : (
-                <div className="w-full h-full flex items-center justify-center p-10 bg-[var(--color-background-light)] text-[var(--color-text-secondary)] font-bold uppercase text-[10px] tracking-widest">
-                  Map not configured
-                </div>
-              )}
+            <div className="w-full max-w-[100vw] overflow-hidden">
+              <div className="rounded-[2.5rem] overflow-hidden border border-[var(--color-border-light)] shadow-xl w-full aspect-video min-h-[400px]">
+                {selectedApartment.googleMapsEmbedUrl ? (
+                  <iframe
+                    title={`Location of ${selectedApartment.name[lang]}`}
+                    src={selectedApartment.googleMapsEmbedUrl}
+                    className="w-full h-full border-0 grayscale-[0.2]"
+                    allowFullScreen={true}
+                    loading="lazy"
+                  ></iframe>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center p-10 bg-[var(--color-background-light)] text-[var(--color-text-secondary)] font-bold uppercase text-[10px] tracking-widest">
+                    Map not configured
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

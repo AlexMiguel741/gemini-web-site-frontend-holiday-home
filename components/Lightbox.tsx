@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Language } from '../types';
 import { UI_LABELS } from '../constants';
 
+const SWIPE_THRESHOLD = 50;
+
 interface LightboxProps {
   images: string[];
   isOpen: boolean;
@@ -12,12 +14,77 @@ interface LightboxProps {
 
 const Lightbox: React.FC<LightboxProps> = ({ images, isOpen, onClose, startIndex = 0, lang }) => {
   const [currentIndex, setCurrentIndex] = useState(startIndex);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     setCurrentIndex(startIndex);
     if (isOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'unset';
   }, [isOpen, startIndex]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => e.preventDefault();
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+
+    const distance = touchStart - e.changedTouches[0].clientX;
+    const isLeftSwipe = distance > SWIPE_THRESHOLD;
+    const isRightSwipe = distance < -SWIPE_THRESHOLD;
+
+    if (isLeftSwipe) {
+      setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+    } else if (isRightSwipe) {
+      setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+    }
+
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setTouchEnd(null);
+    setTouchStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+  };
+
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (!isDragging || !touchStart) {
+      setIsDragging(false);
+      return;
+    }
+
+    const distance = touchStart - e.clientX;
+    const isLeftSwipe = distance > SWIPE_THRESHOLD;
+    const isRightSwipe = distance < -SWIPE_THRESHOLD;
+
+    if (isLeftSwipe) {
+      setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+    } else if (isRightSwipe) {
+      setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+    }
+
+    setIsDragging(false);
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
 
   if (!isOpen) return null;
 
@@ -36,10 +103,21 @@ const Lightbox: React.FC<LightboxProps> = ({ images, isOpen, onClose, startIndex
         </button>
       </div>
 
-      <div className="flex-1 relative flex items-center justify-center bg-slate-50 overflow-hidden">
+      <div
+        className="flex-1 relative flex items-center justify-center bg-slate-50 overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        style={{ userSelect: 'none', touchAction: 'none' }}
+      >
         <button
           onClick={() => setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
           className="absolute left-2 sm:left-4 z-10 p-3 sm:p-4 bg-white/90 backdrop-blur rounded-full shadow-lg hover:bg-white transition-all active:scale-90"
+          style={{ pointerEvents: 'auto' }}
         >
           <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth={2.5}/></svg>
         </button>
@@ -55,6 +133,7 @@ const Lightbox: React.FC<LightboxProps> = ({ images, isOpen, onClose, startIndex
         <button
           onClick={() => setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
           className="absolute right-2 sm:right-4 z-10 p-3 sm:p-4 bg-white/90 backdrop-blur rounded-full shadow-lg hover:bg-white transition-all active:scale-90"
+          style={{ pointerEvents: 'auto' }}
         >
           <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth={2.5}/></svg>
         </button>

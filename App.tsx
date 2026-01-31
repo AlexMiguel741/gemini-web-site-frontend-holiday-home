@@ -386,15 +386,17 @@ const App: React.FC = () => {
                     <h2 className="text-2xl sm:text-4xl font-bold mb-2 tracking-tight">{UI_LABELS.neighborhood_title[lang]}</h2>
                     <p className="text-slate-400 serif italic">{SITE_CONFIG.locationLabel[lang]}</p>
                   </div>
-                  <div className="rounded-[3rem] overflow-hidden shadow-2xl bg-white border border-slate-100 aspect-video min-h-[400px]">
-                    <iframe 
-                      title="Laveno Map"
-                      src={SITE_CONFIG.homeMapEmbedUrl} 
-                      className="w-full h-full grayscale-[0.2]" 
-                      style={{ border: 0 }} 
-                      allowFullScreen={true} 
-                      loading="lazy"
-                    ></iframe>
+                  <div className="w-full max-w-[100vw] overflow-hidden">
+                    <div className="rounded-[3rem] overflow-hidden shadow-2xl bg-white border border-slate-100 aspect-video min-h-[400px]">
+                      <iframe
+                        title="Laveno Map"
+                        src={SITE_CONFIG.homeMapEmbedUrl}
+                        className="w-full h-full grayscale-[0.2]"
+                        style={{ border: 0 }}
+                        allowFullScreen={true}
+                        loading="lazy"
+                      ></iframe>
+                    </div>
                   </div>
                </div>
             </section>
@@ -403,8 +405,8 @@ const App: React.FC = () => {
               <div className="max-w-3xl mx-auto px-6">
                 <h2 className="text-3xl sm:text-6xl font-bold mb-6 tracking-tighter">{UI_LABELS.contact_human[lang]}</h2>
                 <p className="text-slate-400 text-base sm:text-lg mb-10 font-light">{UI_LABELS.contact_desc[lang]}</p>
-                <div className="bg-slate-800 rounded-xl p-6 max-w-md mx-auto">
-                  <ContactInfo 
+                <div className="w-full max-w-md mx-auto px-4">
+                  <ContactInfo
                     primaryEmail={SITE_CONFIG.email}
                     secondaryEmail={SITE_CONFIG.email2}
                     primaryPhone={SITE_CONFIG.whatsapp}
@@ -526,20 +528,22 @@ const App: React.FC = () => {
 
                 <div className="space-y-8">
                    <h3 className="text-slate-900 font-bold text-2xl tracking-tight">{UI_LABELS.neighborhood_title[lang]}</h3>
-                   <div className="rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-xl w-full aspect-video min-h-[400px]">
-                      {selectedApartment.googleMapsEmbedUrl ? (
-                        <iframe 
-                          title={`Location of ${selectedApartment.name[lang]}`}
-                          src={selectedApartment.googleMapsEmbedUrl} 
-                          className="w-full h-full border-0 grayscale-[0.2]" 
-                          allowFullScreen={true} 
-                          loading="lazy"
-                        ></iframe>
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center p-10 bg-slate-50 text-slate-400 font-bold uppercase text-[10px] tracking-widest">
-                          Map not configured
-                        </div>
-                      )}
+                   <div className="w-full max-w-[100vw] overflow-hidden">
+                     <div className="rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-xl w-full aspect-video min-h-[400px]">
+                        {selectedApartment.googleMapsEmbedUrl ? (
+                          <iframe
+                            title={`Location of ${selectedApartment.name[lang]}`}
+                            src={selectedApartment.googleMapsEmbedUrl}
+                            className="w-full h-full border-0 grayscale-[0.2]"
+                            allowFullScreen={true}
+                            loading="lazy"
+                          ></iframe>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center p-10 bg-slate-50 text-slate-400 font-bold uppercase text-[10px] tracking-widest">
+                            Map not configured
+                          </div>
+                        )}
+                     </div>
                    </div>
                 </div>
               </div>

@@ -1,10 +1,8 @@
 .contact-info-container {
-  padding: 32px;
+  padding: 24px;
   background: linear-gradient(135deg, rgba(77,171,247,0.15), rgba(77,171,247,0.05));
   border-radius: 16px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-  max-width: 400px;
-  margin: 0 auto;
   border: 1px solid rgba(255,255,255,0.3);
   backdrop-filter: blur(12px);
   transition: all 0.3s ease;
