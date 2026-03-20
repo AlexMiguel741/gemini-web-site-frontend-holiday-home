@@ -36,24 +36,61 @@ const fetchWithTimeout = (url: string, timeout = 10000): Promise<Response> => {
 // Prova proxy in parallelo (non sequenziale)
 const tryProxiesParallel = async (url: string): Promise<{ contents: string } | null> => {
   const proxies = [
-    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    // allorigins.win - reliable CORS proxy (returns base64 encoded content)
+    {
+      name: 'allorigins',
+      url: `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+      parse: (r: any) => {
+        if (r?.contents) {
+          // Decode base64 if needed
+          let content = r.contents;
+          if (content.startsWith('data:text/calendar;base64,')) {
+            const base64 = content.split(',')[1];
+            try {
+              content = atob(base64);
+            } catch (e) {
+              console.warn('Failed to decode base64:', e);
+              return null;
+            }
+          }
+          return { contents: content };
+        }
+        return null;
+      }
+    }
   ];
 
   const results = await Promise.allSettled(
-    proxies.map(proxyUrl =>
-      fetchWithTimeout(proxyUrl, 3000)
-        .then(r => r.ok ? r.json() : null)
-        .then(data => (data?.contents ? data : null))
+    proxies.map(proxy =>
+      fetchWithTimeout(proxy.url, 8000)
+        .then(async r => {
+          if (!r.ok) {
+            console.warn(`⚠️ ${proxy.name} returned ${r.status}`);
+            return null;
+          }
+          try {
+            const json = await r.json();
+            return proxy.parse(json);
+          } catch (e) {
+            console.warn(`⚠️ ${proxy.name} parse error:`, e.message);
+            return null;
+          }
+        })
+        .catch(e => {
+          console.warn(`⚠️ ${proxy.name} fetch error:`, e.message);
+          return null;
+        })
     )
   );
 
   // Ritorna il primo risultato riuscito
   for (const result of results) {
     if (result.status === 'fulfilled' && result.value?.contents) {
+      console.log('✅ CORS Proxy succeeded');
       return result.value;
     }
   }
+  console.warn('⚠️ All CORS proxies failed - trying direct fetch fallback');
   return null;
 };
 
@@ -152,34 +189,41 @@ export const fetchAndParseIcal = async (url: string): Promise<BookedRange[]> => 
   // Verifica cache solo se ha dati (non cachare errori)
   const cached = calendarCache.get(normalizedUrl);
   if (cached && cached.data.length > 0 && Date.now() - cached.timestamp < CACHE_DURATION) {
-    if (isDev) console.log('📦 Using cached bookings:', cached.data.length, 'events from', normalizedUrl.substring(0, 60) + '...');
+    console.log('📦 Cache hit:', cached.data.length, 'bookings');
     return cached.data;
   }
 
   try {
-    if (isDev) console.log('🔄 Fetching calendar from:', normalizedUrl.substring(0, 70) + '...');
+    console.log('🔄 Fetching calendar from:', normalizedUrl.substring(0, 70) + '...');
     
-    // Prova direct fetch PRIMA dei proxy (più veloce e affidabile)
+    // In produzione, SEMPRE usa proxy per evitare CORS issues
+    // In dev, prova direct fetch prima
     let data: { contents: string } | null = null;
     
-    try {
-      const response = await fetchWithTimeout(normalizedUrl, 10000);
-      if (response.ok) {
-        data = { contents: await response.text() };
-        if (isDev) console.log('✅ Direct fetch succeeded');
+    if (isDev) {
+      // DEV: Prova direct fetch PRIMA (Vite ha proxy che bypassa CORS)
+      try {
+        const response = await fetchWithTimeout(normalizedUrl, 10000);
+        if (response.ok) {
+          data = { contents: await response.text() };
+          console.log('✅ Direct fetch succeeded');
+        }
+      } catch (fetchError) {
+        console.warn('⚠️ Direct fetch failed, trying proxy:', (fetchError as Error).message);
       }
-    } catch (fetchError) {
-      if (isDev) console.warn('⚠️ Direct fetch failed, trying proxy:', (fetchError as Error).message);
-      
-      // Fallback: prova proxy in parallelo
-      data = await tryProxiesParallel(url);
-      if (data?.contents && isDev) {
+    }
+    
+    // PRODUZIONE o fallback: Prova proxy in parallelo
+    if (!data?.contents) {
+      console.log('🌐 Trying CORS proxy...');
+      data = await tryProxiesParallel(normalizedUrl);
+      if (data?.contents) {
         console.log('✅ Proxy fetch succeeded');
       }
     }
 
     if (!data?.contents) {
-      if (isDev) console.warn('❌ No data retrieved from any source for:', url.substring(0, 60) + '...');
+      console.error('❌ No data retrieved from any source for:', normalizedUrl.substring(0, 60) + '...');
       return [];
     }
 
@@ -192,20 +236,22 @@ export const fetchAndParseIcal = async (url: string): Promise<BookedRange[]> => 
     }
 
     if (!icsText || icsText.length < 50) {
-      if (isDev) console.warn('⚠️ ICS response too small:', icsText?.length || 0, 'bytes');
+      console.warn('⚠️ ICS response too small:', icsText?.length || 0, 'bytes');
       return [];
     }
 
     const result = parseIcsString(icsText, isDev);
     
-    if (isDev) console.log(`✅ Parsed ${result.length} bookings from iCal`);
+    console.log(`✅ Parsed ${result.length} bookings from iCal`);
     
-    // Salva in cache usando URL normalizzata
-    calendarCache.set(normalizedUrl, { data: result, timestamp: Date.now() });
+    // Salva in cache usando URL normalizzata SOLO se ha dati validi
+    if (result.length > 0 || icsText.length > 200) {
+      calendarCache.set(normalizedUrl, { data: result, timestamp: Date.now() });
+    }
     
     return result;
   } catch (error) {
-    if (isDev) console.error('❌ Fatal error in fetchAndParseIcal:', (error as Error).message);
+    console.error('❌ Fatal error in fetchAndParseIcal:', (error as Error).message);
     return [];
   }
 };
