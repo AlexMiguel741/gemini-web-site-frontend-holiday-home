@@ -1,7 +1,7 @@
-
 /**
  * ICAL SERVICE
  * Gestisce il fetch e il parsing dei file .ics da piattaforme esterne.
+ * Ottimizzato con caching, timeout e fallback parallelo.
  */
 
 export interface BookedRange {
@@ -9,151 +9,189 @@ export interface BookedRange {
   end: Date;
 }
 
-export const fetchAndParseIcal = async (url: string): Promise<BookedRange[]> => {
-  if (!url || url.trim() === '' || url.includes('example.ics')) {
-    console.log('iCal: No URL provided or example URL, skipping');
-    return [];
+// Cache in-memory per evitare richieste duplicate
+const calendarCache = new Map<string, { data: BookedRange[]; timestamp: number }>();
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minuti
+
+// Fetch con timeout
+const fetchWithTimeout = (url: string, timeout = 3000): Promise<Response> => {
+  return Promise.race([
+    fetch(url, { headers: { 'Accept': 'text/calendar, application/json' } }),
+    new Promise<Response>((_, reject) =>
+      setTimeout(() => reject(new Error('Fetch timeout')), timeout)
+    )
+  ]);
+};
+
+// Prova proxy in parallelo (non sequenziale)
+const tryProxiesParallel = async (url: string): Promise<{ contents: string } | null> => {
+  const proxies = [
+    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+    `https://cors-anywhere.herokuapp.com/${url}`,
+  ];
+
+  const results = await Promise.allSettled(
+    proxies.map(proxyUrl =>
+      fetchWithTimeout(proxyUrl, 3000)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => (data?.contents ? data : null))
+    )
+  );
+
+  // Ritorna il primo risultato riuscito
+  for (const result of results) {
+    if (result.status === 'fulfilled' && result.value?.contents) {
+      return result.value;
+    }
   }
+  return null;
+};
 
-  console.log('iCal: Fetching calendar from:', url);
-
+const extractDate = (line: string, debug = false): Date | null => {
   try {
-    // Multiple CORS proxy options for reliability
-    const proxies = [
-      `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-      `https://cors-anywhere.herokuapp.com/${url}`,
-      `https://thingproxy.freeboard.io/fetch/${url}`
-    ];
+    const parts = line.split(':');
+    let dateStr = parts[parts.length - 1];
+    if (!dateStr) return null;
 
-    let response;
-    let data;
+    dateStr = dateStr.trim().split(';').pop() || dateStr.trim();
 
-    // Try each proxy until one works
-    for (const proxyUrl of proxies) {
+    // YYYYMMDD format (all-day events)
+    if (/^\d{8}$/.test(dateStr)) {
+      const year = parseInt(dateStr.substring(0, 4));
+      const month = parseInt(dateStr.substring(4, 6)) - 1;
+      const day = parseInt(dateStr.substring(6, 8));
+      const date = new Date(Date.UTC(year, month, day, 0, 0, 0));
+      return isNaN(date.getTime()) ? null : date;
+    }
+    
+    // ISO format like 20231201T000000Z or 20231201T000000 (timed events)
+    if (/^\d{8}T\d{6}Z?$/.test(dateStr)) {
       try {
-        console.log('iCal: Trying proxy:', proxyUrl.substring(0, 50) + '...');
-        response = await fetch(proxyUrl, {
-          headers: {
-            'Accept': 'text/calendar, application/json',
-          }
-        });
-
-        if (response.ok) {
-          data = await response.json();
-          if (data && data.contents) {
-            break;
-          }
-        }
-      } catch (proxyError) {
-        console.warn('iCal: Proxy failed:', proxyError);
-        continue;
+        const year = parseInt(dateStr.substring(0, 4));
+        const month = parseInt(dateStr.substring(4, 6)) - 1;
+        const day = parseInt(dateStr.substring(6, 8));
+        const hour = parseInt(dateStr.substring(9, 11));
+        const minute = parseInt(dateStr.substring(11, 13));
+        const second = parseInt(dateStr.substring(13, 15));
+        
+        // Use UTC to avoid timezone issues
+        const date = new Date(Date.UTC(year, month, day, hour, minute, second));
+        return isNaN(date.getTime()) ? null : date;
+      } catch {
+        return null;
       }
     }
 
-    if (!data || !data.contents) {
-      // Try direct fetch as fallback (might work on some hosting platforms)
-      console.log('iCal: Trying direct fetch...');
-      response = await fetch(url);
-      if (response.ok) {
-        data = { contents: await response.text() };
-      } else {
-        throw new Error('All proxy attempts failed');
-      }
-    }
-
-    let icsText = data.contents;
-
-    // Handle base64 encoded data URLs (some proxies return data:text/calendar;base64,...)
-    if (icsText.startsWith('data:text/calendar;base64,')) {
-      const base64Data = icsText.split(',')[1];
-      icsText = atob(base64Data);
-      console.log('iCal: Decoded base64 iCal data, new length:', icsText.length);
-    }
-    console.log('iCal: Received ICS data, length:', icsText.length);
-
-    if (!icsText || icsText.length < 100) {
-      console.warn('iCal: ICS data too short or empty');
-      return [];
-    }
-
-    return parseIcsString(icsText);
+    // Fallback: try standard date parsing
+    const date = new Date(dateStr);
+    return isNaN(date.getTime()) ? null : date;
   } catch (error) {
-    console.error('iCal Sync Error:', error);
-    return [];
+    if (debug) console.warn('Failed to extract date from:', line);
+    return null;
   }
 };
 
-const parseIcsString = (icsText: string): BookedRange[] => {
+const parseIcsString = (icsText: string, debug = false): BookedRange[] => {
   const ranges: BookedRange[] = [];
   const lines = icsText.split(/\r?\n/);
 
   let currentStart: Date | null = null;
   let currentEnd: Date | null = null;
-
-  console.log('iCal: Parsing ICS data, total lines:', lines.length);
+  let eventCount = 0;
+  let validEvents = 0;
 
   for (const line of lines) {
     const cleanLine = line.trim();
     if (cleanLine.startsWith('BEGIN:VEVENT')) {
       currentStart = null;
       currentEnd = null;
+      eventCount++;
     } else if (cleanLine.startsWith('DTSTART')) {
-      currentStart = extractDate(cleanLine);
-      console.log('iCal: Found DTSTART:', cleanLine, '-> parsed date:', currentStart);
+      currentStart = extractDate(cleanLine, debug);
     } else if (cleanLine.startsWith('DTEND')) {
-      currentEnd = extractDate(cleanLine);
-      console.log('iCal: Found DTEND:', cleanLine, '-> parsed date:', currentEnd);
+      currentEnd = extractDate(cleanLine, debug);
     } else if (cleanLine.startsWith('END:VEVENT')) {
       if (currentStart && currentEnd) {
         ranges.push({ start: currentStart, end: currentEnd });
-        console.log('iCal: Added booking range:', {
-          start: currentStart.toISOString(),
-          end: currentEnd.toISOString(),
-          startDateString: currentStart.toDateString(),
-          endDateString: currentEnd.toDateString()
-        });
+        validEvents++;
+        if (debug) {
+          console.log(`  Event ${validEvents}: ${currentStart.toISOString().split('T')[0]} → ${currentEnd.toISOString().split('T')[0]}`);
+        }
       }
     }
   }
 
-  console.log('iCal: Total booking ranges found:', ranges.length);
+  if (debug) {
+    console.log(`📊 Event parsing: ${validEvents}/${eventCount} events valid`);
+  }
+
   return ranges;
 };
 
-const extractDate = (line: string): Date | null => {
-  const parts = line.split(':');
-  let dateStr = parts[parts.length - 1];
-  if (!dateStr) return null;
-
-  // Remove any parameters (e.g., ;VALUE=DATE:20231201)
-  dateStr = dateStr.split(';').pop() || dateStr;
-
-  // Handle different formats
-  if (dateStr.length === 8) {
-    // YYYYMMDD format
-    const year = parseInt(dateStr.substring(0, 4));
-    const month = parseInt(dateStr.substring(4, 6)) - 1;
-    const day = parseInt(dateStr.substring(6, 8));
-    const date = new Date(year, month, day);
-    return isNaN(date.getTime()) ? null : date;
-  } else if (dateStr.includes('T')) {
-    // ISO format like 20231201T000000Z
-    try {
-      // Convert to ISO format
-      const isoStr = dateStr.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z?/, '$1-$2-$3T$4:$5:$6Z');
-      const date = new Date(isoStr);
-      return isNaN(date.getTime()) ? null : date;
-    } catch {
-      return null;
-    }
+export const fetchAndParseIcal = async (url: string): Promise<BookedRange[]> => {
+  if (!url || url.trim() === '' || url.includes('example.ics')) {
+    return [];
   }
 
-  // Try parsing as ISO string directly
+  // Check in DEV mode if in dev environment
+  const isDev = typeof window !== 'undefined' && (window as any).import?.meta?.env?.DEV;
+
+  // Verifica cache
+  const cached = calendarCache.get(url);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    if (isDev) console.log('📦 Using cached bookings:', cached.data.length, 'events');
+    return cached.data;
+  }
+
   try {
-    const date = new Date(dateStr);
-    return isNaN(date.getTime()) ? null : date;
-  } catch {
-    console.warn('iCal: Could not parse date:', dateStr);
-    return null;
+    if (isDev) console.log('🔄 Fetching calendar from:', url.substring(0, 70) + '...');
+    
+    // Prova proxy in parallelo per velocità
+    let data = await tryProxiesParallel(url);
+
+    // Fallback: direct fetch se i proxy falliscono
+    if (!data?.contents) {
+      try {
+        const response = await fetchWithTimeout(url, 3000);
+        if (response.ok) {
+          data = { contents: await response.text() };
+          if (isDev) console.log('✅ Direct fetch succeeded');
+        }
+      } catch (fetchError) {
+        if (isDev) console.warn('❌ Direct fetch failed:', (fetchError as Error).message);
+      }
+    } else if (isDev) {
+      console.log('✅ Proxy fetch succeeded');
+    }
+
+    if (!data?.contents) {
+      if (isDev) console.warn('⚠️ No data retrieved from any source');
+      return [];
+    }
+
+    let icsText = data.contents;
+
+    // Handle base64 encoded data
+    if (icsText.startsWith('data:text/calendar;base64,')) {
+      const base64Data = icsText.split(',')[1];
+      icsText = atob(base64Data);
+    }
+
+    if (!icsText || icsText.length < 50) {
+      if (isDev) console.warn('⚠️ ICS response too small:', icsText?.length || 0, 'bytes');
+      return [];
+    }
+
+    const result = parseIcsString(icsText, isDev);
+    
+    if (isDev) console.log(`✅ Parsed ${result.length} bookings from iCal`);
+    
+    // Salva in cache
+    calendarCache.set(url, { data: result, timestamp: Date.now() });
+    
+    return result;
+  } catch (error) {
+    if (isDev) console.error('❌ Fatal error in fetchAndParseIcal:', (error as Error).message);
+    return [];
   }
 };

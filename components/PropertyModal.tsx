@@ -1,1 +1,0 @@
-// Component removed in favor of full page views in App.tsx

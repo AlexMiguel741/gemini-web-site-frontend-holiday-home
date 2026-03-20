@@ -7,6 +7,7 @@ import ApartmentCard from './components/ApartmentCard';
 import { fetchAndParseIcal, BookedRange } from './services/icalService';
 import Footer from './components/Footer';
 import SmartImage from './components/SmartImage';
+import CalendarDebugPanel from './components/CalendarDebugPanel';
 
 type View = 'home' | 'story' | 'property';
 
@@ -84,30 +85,56 @@ const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> =
   });
   const [isSyncing, setIsSyncing] = useState(false);
   const [realBookings, setRealBookings] = useState<BookedRange[]>([]);
+  const [syncError, setSyncError] = useState(false);
 
   useEffect(() => {
+    let retryTimeout: NodeJS.Timeout | null = null;
+    let isMounted = true;
+
     const sync = async () => {
-      console.log('Calendar: useEffect triggered for apartment:', apartment.id, 'URL:', apartment.icalUrl);
       if (!apartment.icalUrl) {
-        console.log('Calendar: No iCal URL for apartment:', apartment.id);
+        console.warn('⚠️ No iCal URL configured for', apartment.name.en);
         return;
       }
-      console.log('Calendar: Starting sync for apartment:', apartment.id, 'URL:', apartment.icalUrl);
       setIsSyncing(true);
-      const bookings = await fetchAndParseIcal(apartment.icalUrl);
-      console.log('Calendar: Received bookings:', bookings.length, 'ranges');
-      console.log('Calendar: Setting realBookings state:', bookings);
-      setRealBookings(bookings);
-      setIsSyncing(false);
-      console.log('Calendar: Sync completed, isSyncing set to false');
+      setSyncError(false);
+      
+      try {
+        const bookings = await fetchAndParseIcal(apartment.icalUrl);
+        if (isMounted) {
+          setRealBookings(bookings);
+          setSyncError(false);
+          
+          // Log parsed bookings for debugging
+          if (bookings.length > 0) {
+            console.log(`✅ Calendar loaded: ${bookings.length} bookings`);
+            bookings.slice(0, 3).forEach((b, i) => {
+              console.log(`  ${i + 1}. ${b.start.toISOString().split('T')[0]} to ${b.end.toISOString().split('T')[0]}`);
+            });
+            if (bookings.length > 3) console.log(`  ... and ${bookings.length - 3} more`);
+          } else {
+            console.log('ℹ️ No bookings found in calendar');
+          }
+        }
+      } catch (error) {
+        if (isMounted) {
+          setSyncError(true);
+          console.error('❌ Calendar sync error:', (error as Error).message);
+          // Retry dopo 5 secondi
+          retryTimeout = setTimeout(sync, 5000);
+        }
+      } finally {
+        if (isMounted) setIsSyncing(false);
+      }
     };
-    sync();
-  }, [apartment.id, apartment.icalUrl]);
 
-  // Debug: Log when realBookings changes
-  useEffect(() => {
-    console.log('Calendar: realBookings state changed:', realBookings);
-  }, [realBookings]);
+    sync();
+
+    return () => {
+      isMounted = false;
+      if (retryTimeout) clearTimeout(retryTimeout);
+    };
+  }, [apartment.id, apartment.icalUrl]);
 
   const monthName = viewDate.toLocaleString(lang, { month: 'long' });
   const year = viewDate.getFullYear();
@@ -115,54 +142,50 @@ const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> =
   const firstDayOfMonth = new Date(year, viewDate.getMonth(), 1).getDay();
 
   const isDayBooked = (day: number) => {
-    console.log(`Calendar: isDayBooked called for day ${day}, realBookings length:`, realBookings.length);
-    const checkDate = new Date(year, viewDate.getMonth(), day);
-    // Normalize to start of day for comparison
-    checkDate.setHours(0, 0, 0, 0);
+    const currentYear = viewDate.getFullYear();
+    const currentMonth = viewDate.getMonth();
+    
+    // Create date in UTC to match iCal dates
+    const checkDate = new Date(Date.UTC(currentYear, currentMonth, day, 0, 0, 0));
 
     const isBooked = realBookings.some(range => {
-      // Normalize range dates to start of day
-      const startDate = new Date(range.start);
-      startDate.setHours(0, 0, 0, 0);
-      const endDate = new Date(range.end);
-      endDate.setHours(0, 0, 0, 0);
+      // Convert range dates to UTC timestamps for comparison
+      const startTime = new Date(range.start).getTime();
+      const endTime = new Date(range.end).getTime();
+      const checkTime = checkDate.getTime();
 
-      // Check if checkDate is within the range (inclusive start, exclusive end as per iCal standard)
-      return checkDate >= startDate && checkDate < endDate;
+      // A day is booked if it falls within the range [start, end)
+      return checkTime >= startTime && checkTime < endTime;
     });
-
-    // Debug logging for first few days of any month
-    if ([1, 2, 3, 4, 5].includes(day)) {
-      console.log(`Calendar: Day ${day} (${checkDate.toDateString()}) booked:`, isBooked);
-      if (realBookings.length > 0 && day === 1) {
-        console.log('Calendar: Available ranges:', realBookings.map(r => ({
-          start: r.start.toDateString(),
-          end: r.end.toDateString()
-        })));
-      }
-    }
 
     return isBooked;
   };
 
   const isDayInPast = (day: number) => {
-    const checkDate = new Date(year, viewDate.getMonth(), day);
-    checkDate.setHours(0, 0, 0, 0);
+    const currentYear = viewDate.getFullYear();
+    const currentMonth = viewDate.getMonth();
+    
+    // Create date in UTC to match iCal dates
+    const checkDate = new Date(Date.UTC(currentYear, currentMonth, day, 0, 0, 0));
 
+    // Today's date at midnight UTC
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0));
 
-    return checkDate < today;
+    return checkDate < todayUTC;
   };
 
   const isToday = (day: number) => {
-    const checkDate = new Date(year, viewDate.getMonth(), day);
-    checkDate.setHours(0, 0, 0, 0);
+    const currentYear = viewDate.getFullYear();
+    const currentMonth = viewDate.getMonth();
+    // Create date in UTC to match iCal dates
+    const checkDate = new Date(Date.UTC(currentYear, currentMonth, day, 0, 0, 0));
 
+    // Today's date at midnight UTC
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0));
 
-    return checkDate.getTime() === today.getTime();
+    return checkDate.getTime() === todayUTC.getTime();
   };
 
   return (
@@ -171,9 +194,9 @@ const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> =
         <div>
           <h4 className="font-bold text-slate-900 text-xl capitalize">{monthName} {year}</h4>
           <div className="flex items-center gap-2 mt-1">
-            <div className={`w-2 h-2 rounded-full ${isSyncing ? 'bg-orange-400 animate-pulse' : 'bg-emerald-500'}`}></div>
+            <div className={`w-2 h-2 rounded-full ${isSyncing ? 'bg-orange-400 animate-pulse' : syncError ? 'bg-red-500' : 'bg-emerald-500'}`}></div>
             <span className="text-[9px] uppercase font-bold tracking-widest text-slate-400">
-              {isSyncing ? UI_LABELS.sync_live[lang] : UI_LABELS.sync_connected[lang]}
+              {isSyncing ? UI_LABELS.sync_live[lang] : syncError ? 'Errore Sincronizzazione' : UI_LABELS.sync_connected[lang]}
             </span>
           </div>
         </div>
@@ -526,6 +549,8 @@ const App: React.FC = () => {
                    </div>
                 </div>
 
+
+
                 <div className="space-y-8">
                    <h3 className="text-slate-900 font-bold text-2xl tracking-tight">{UI_LABELS.neighborhood_title[lang]}</h3>
                    <div className="w-full max-w-[100vw] overflow-hidden">
@@ -609,6 +634,8 @@ const App: React.FC = () => {
       </main>
 
       <Footer />
+      
+      {import.meta.env.DEV && <CalendarDebugPanel />}
     </div>
   );
 };
