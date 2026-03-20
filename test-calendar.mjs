@@ -16,21 +16,21 @@ const APARTMENTS = [
   },
   {
     name: 'Verso il Lago',
-    url: 'https://ical.booking.com/v1/export?t=1cb3a14d-a13a-4833-8240-912478849846'
+    url: 'https://ical.booking.com/v1/export/t/1cb3a14d-a13a-4833-8240-912478849846.ics'
   },
   {
     name: 'Le Cascate',
-    url: 'https://ical.booking.com/v1/export?t=d4e0ddde-2c63-4b93-abd2-e3fec042a905'
+    url: 'https://ical.booking.com/v1/export/t/d4e0ddde-2c63-4b93-abd2-e3fec042a905.ics'
   },
   {
     name: 'Casa Azzurra',
-    url: 'https://ical.booking.com/v1/export?t=281c00e1-0da9-49f8-a98d-b7532b6e48bb'
+    url: 'https://ical.booking.com/v1/export/t/281c00e1-0da9-49f8-a98d-b7532b6e48bb.ics'
   }
 ];
 
 const PROXIES = [
   url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-  url => `https://cors-anywhere.herokuapp.com/${url}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
 ];
 
 async function fetchWithTimeout(url, timeout = 3000) {

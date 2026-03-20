@@ -27,7 +27,7 @@ const fetchWithTimeout = (url: string, timeout = 3000): Promise<Response> => {
 const tryProxiesParallel = async (url: string): Promise<{ contents: string } | null> => {
   const proxies = [
     `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-    `https://cors-anywhere.herokuapp.com/${url}`,
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
   ];
 
   const results = await Promise.allSettled(
