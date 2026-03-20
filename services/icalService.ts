@@ -1,6 +1,6 @@
 /**
- * ICAL SERVICE - PRODUCTION STABLE VERSION
- * Semplice, affidabile, NO CACHE
+ * ICAL SERVICE - ULTRA SIMPLE & RELIABLE
+ * NO cache, NO complexity. Retry logic only.
  */
 
 export interface BookedRange {
@@ -8,72 +8,19 @@ export interface BookedRange {
   end: Date;
 }
 
-// Fetch con timeout
-const fetchWithTimeout = (url: string, timeout = 15000): Promise<Response> => {
-  return Promise.race([
-    fetch(url, { 
-      headers: { 'Accept': 'text/calendar' },
-      mode: 'cors'
-    }),
-    new Promise<Response>((_, reject) =>
-      setTimeout(() => reject(new Error('Timeout')), timeout)
-    )
-  ]);
-};
-
-// Simple proxy fallback
-const fetchWithProxy = async (url: string): Promise<string | null> => {
-  try {
-    console.log('📡 Trying CORS proxy...');
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const response = await fetchWithTimeout(proxyUrl, 15000);
-    
-    if (!response.ok) {
-      console.warn(`Proxy returned ${response.status}`);
-      return null;
-    }
-    
-    const data = await response.json();
-    
-    // allorigins returns base64 encoded in data URI
-    if (data?.contents?.startsWith('data:text/calendar;base64,')) {
-      const base64Data = data.contents.split(',')[1];
-      try {
-        return atob(base64Data);
-      } catch (e) {
-        console.warn('Failed to decode base64');
-        return null;
-      }
-    }
-    
-    // Or raw content
-    if (data?.contents && typeof data.contents === 'string') {
-      return data.contents;
-    }
-    
-    return null;
-  } catch (error) {
-    console.warn('Proxy failed:', (error as Error).message);
-    return null;
-  }
-};
-
-// Extract date from iCal line
 const extractDate = (line: string): Date | null => {
   try {
     const parts = line.split(':');
     if (parts.length < 2) return null;
     
     let dateStr = parts[parts.length - 1].trim();
-    
-    // Remove any parameters
     if (dateStr.includes(';')) {
       dateStr = dateStr.split(';').pop() || dateStr;
     }
     
     dateStr = dateStr.trim();
 
-    // YYYYMMDD format (all-day events)
+    // YYYYMMDD format
     if (/^\d{8}$/.test(dateStr)) {
       const year = parseInt(dateStr.substring(0, 4));
       const month = parseInt(dateStr.substring(4, 6)) - 1;
@@ -82,7 +29,7 @@ const extractDate = (line: string): Date | null => {
       return isNaN(date.getTime()) ? null : date;
     }
     
-    // ISO format with time (YYYYMMDDTHHMMSSZ or YYYYMMDDTHHMMSS)
+    // YYYYMMDDTHHMMSSZ format
     if (/^\d{8}T\d{6}Z?$/.test(dateStr)) {
       const year = parseInt(dateStr.substring(0, 4));
       const month = parseInt(dateStr.substring(4, 6)) - 1;
@@ -96,12 +43,11 @@ const extractDate = (line: string): Date | null => {
     }
 
     return null;
-  } catch (error) {
+  } catch {
     return null;
   }
 };
 
-// Parse iCal string
 const parseIcsString = (icsText: string): BookedRange[] => {
   const ranges: BookedRange[] = [];
   const lines = icsText.split(/\r?\n/);
@@ -131,50 +77,111 @@ const parseIcsString = (icsText: string): BookedRange[] => {
   return ranges;
 };
 
-// Main fetch and parse function
+// Fetch with multiple retries
+const fetchWithRetry = async (url: string, retries = 3): Promise<string | null> => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      
+      const response = await fetch(url, {
+        headers: { 'Accept': 'text/calendar' },
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeout);
+      
+      if (response.ok) {
+        return await response.text();
+      }
+    } catch (error) {
+      if (i < retries - 1) {
+        await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+      }
+    }
+  }
+  return null;
+};
+
+// Proxy fetch with retry
+const fetchWithProxyRetry = async (url: string, retries = 3): Promise<string | null> => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+      const response = await fetch(proxyUrl, {
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeout);
+      
+      if (!response.ok) {
+        if (i < retries - 1) {
+          await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+        }
+        continue;
+      }
+      
+      const data = await response.json();
+      
+      if (data?.contents?.startsWith('data:text/calendar;base64,')) {
+        const base64Data = data.contents.split(',')[1];
+        try {
+          return atob(base64Data);
+        } catch {
+          if (i < retries - 1) {
+            await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+          }
+          continue;
+        }
+      }
+      
+      if (typeof data?.contents === 'string') {
+        return data.contents;
+      }
+      
+      if (i < retries - 1) {
+        await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+      }
+    } catch (error) {
+      if (i < retries - 1) {
+        await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+      }
+    }
+  }
+  return null;
+};
+
 export const fetchAndParseIcal = async (url: string): Promise<BookedRange[]> => {
   if (!url || url.trim() === '') {
     return [];
   }
 
   try {
-    console.log('🔄 Fetching from:', url.substring(0, 60) + '...');
+    console.log('📅 Loading calendar...');
     
-    let icsText: string | null = null;
+    // Try direct fetch first (3 retries)
+    let icsText = await fetchWithRetry(url, 3);
     
-    // Try direct fetch first
-    try {
-      const response = await fetchWithTimeout(url, 15000);
-      
-      if (response.ok) {
-        icsText = await response.text();
-        console.log('✅ Direct fetch OK, ' + icsText.length + ' bytes');
-      } else {
-        console.log(`Direct fetch: ${response.status}`);
-      }
-    } catch (error) {
-      console.log('Direct fetch failed:', (error as Error).message);
-    }
-    
-    // Fallback to proxy if direct failed
+    // If direct failed, try proxy (3 retries)
     if (!icsText) {
-      icsText = await fetchWithProxy(url);
-      if (icsText) {
-        console.log('✅ Proxy OK, ' + icsText.length + ' bytes');
-      }
+      console.log('📡 Trying proxy...');
+      icsText = await fetchWithProxyRetry(url, 3);
     }
 
     if (!icsText || icsText.length < 100) {
-      console.error('No valid response');
+      console.warn('No calendar data');
       return [];
     }
 
     const result = parseIcsString(icsText);
-    console.log(`✅ Parsed ${result.length} bookings`);
+    console.log(`✅ Calendar loaded: ${result.length} bookings`);
     
     return result;
   } catch (error) {
-    console.error('Error:', (error as Error).message);
+    console.error('Calendar error:', (error as Error).message);
     return [];
   }
 };
