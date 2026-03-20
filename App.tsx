@@ -96,11 +96,13 @@ const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> =
         console.warn('⚠️ No iCal URL configured for', apartment.name.en);
         return;
       }
+      console.log(`🔵 [Calendar] useEffect triggered for apartment ID: ${apartment.id}, URL: ${apartment.icalUrl.substring(0, 60)}...`);
       setIsSyncing(true);
       setSyncError(false);
       
       try {
         const bookings = await fetchAndParseIcal(apartment.icalUrl);
+        console.log(`🟢 [Calendar] Fetch completed for ${apartment.id}: ${bookings.length} bookings`);
         if (isMounted) {
           setRealBookings(bookings);
           setSyncError(false);
@@ -196,7 +198,7 @@ const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> =
           <div className="flex items-center gap-2 mt-1">
             <div className={`w-2 h-2 rounded-full ${isSyncing ? 'bg-orange-400 animate-pulse' : syncError ? 'bg-red-500' : 'bg-emerald-500'}`}></div>
             <span className="text-[9px] uppercase font-bold tracking-widest text-slate-400">
-              {isSyncing ? UI_LABELS.sync_live[lang] : syncError ? 'Errore Sincronizzazione' : UI_LABELS.sync_connected[lang]}
+              {isSyncing ? 'Sincronizzazione...' : syncError ? 'Errore Sincronizzazione' : `${realBookings.length} prenotazioni`}
             </span>
           </div>
         </div>
@@ -545,7 +547,7 @@ const App: React.FC = () => {
                 <div className="space-y-8">
                    <h3 className="text-slate-900 font-bold text-2xl tracking-tight">{UI_LABELS.availability_title[lang]}</h3>
                    <div className="w-full">
-                     <AvailabilityCalendar apartment={selectedApartment} lang={lang} />
+                     <AvailabilityCalendar key={selectedApartment.id} apartment={selectedApartment} lang={lang} />
                    </div>
                 </div>
 

@@ -13,8 +13,18 @@ export interface BookedRange {
 const calendarCache = new Map<string, { data: BookedRange[]; timestamp: number }>();
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minuti
 
+// Normalizza URL per evitare duplicati
+const normalizeUrl = (url: string): string => {
+  try {
+    const u = new URL(url);
+    return u.toString();
+  } catch {
+    return url;
+  }
+};
+
 // Fetch con timeout
-const fetchWithTimeout = (url: string, timeout = 3000): Promise<Response> => {
+const fetchWithTimeout = (url: string, timeout = 10000): Promise<Response> => {
   return Promise.race([
     fetch(url, { headers: { 'Accept': 'text/calendar, application/json' } }),
     new Promise<Response>((_, reject) =>
@@ -133,39 +143,43 @@ export const fetchAndParseIcal = async (url: string): Promise<BookedRange[]> => 
     return [];
   }
 
+  // Normalize URL for consistent caching
+  const normalizedUrl = normalizeUrl(url);
+  
   // Check in DEV mode if in dev environment
   const isDev = typeof window !== 'undefined' && (window as any).import?.meta?.env?.DEV;
 
-  // Verifica cache
-  const cached = calendarCache.get(url);
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    if (isDev) console.log('📦 Using cached bookings:', cached.data.length, 'events');
+  // Verifica cache solo se ha dati (non cachare errori)
+  const cached = calendarCache.get(normalizedUrl);
+  if (cached && cached.data.length > 0 && Date.now() - cached.timestamp < CACHE_DURATION) {
+    if (isDev) console.log('📦 Using cached bookings:', cached.data.length, 'events from', normalizedUrl.substring(0, 60) + '...');
     return cached.data;
   }
 
   try {
-    if (isDev) console.log('🔄 Fetching calendar from:', url.substring(0, 70) + '...');
+    if (isDev) console.log('🔄 Fetching calendar from:', normalizedUrl.substring(0, 70) + '...');
     
-    // Prova proxy in parallelo per velocità
-    let data = await tryProxiesParallel(url);
-
-    // Fallback: direct fetch se i proxy falliscono
-    if (!data?.contents) {
-      try {
-        const response = await fetchWithTimeout(url, 3000);
-        if (response.ok) {
-          data = { contents: await response.text() };
-          if (isDev) console.log('✅ Direct fetch succeeded');
-        }
-      } catch (fetchError) {
-        if (isDev) console.warn('❌ Direct fetch failed:', (fetchError as Error).message);
+    // Prova direct fetch PRIMA dei proxy (più veloce e affidabile)
+    let data: { contents: string } | null = null;
+    
+    try {
+      const response = await fetchWithTimeout(normalizedUrl, 10000);
+      if (response.ok) {
+        data = { contents: await response.text() };
+        if (isDev) console.log('✅ Direct fetch succeeded');
       }
-    } else if (isDev) {
-      console.log('✅ Proxy fetch succeeded');
+    } catch (fetchError) {
+      if (isDev) console.warn('⚠️ Direct fetch failed, trying proxy:', (fetchError as Error).message);
+      
+      // Fallback: prova proxy in parallelo
+      data = await tryProxiesParallel(url);
+      if (data?.contents && isDev) {
+        console.log('✅ Proxy fetch succeeded');
+      }
     }
 
     if (!data?.contents) {
-      if (isDev) console.warn('⚠️ No data retrieved from any source');
+      if (isDev) console.warn('❌ No data retrieved from any source for:', url.substring(0, 60) + '...');
       return [];
     }
 
@@ -186,8 +200,8 @@ export const fetchAndParseIcal = async (url: string): Promise<BookedRange[]> => 
     
     if (isDev) console.log(`✅ Parsed ${result.length} bookings from iCal`);
     
-    // Salva in cache
-    calendarCache.set(url, { data: result, timestamp: Date.now() });
+    // Salva in cache usando URL normalizzata
+    calendarCache.set(normalizedUrl, { data: result, timestamp: Date.now() });
     
     return result;
   } catch (error) {
