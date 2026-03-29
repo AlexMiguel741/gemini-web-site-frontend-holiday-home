@@ -66,7 +66,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
         </span>
         <div>
           <div className="contact-label">WhatsApp:</div>
-          <a href={`tel:${primaryPhone}`} className="phone-number">
+          <a href={`https://wa.me/${primaryPhone.replace(/\D/g, '')}?text=Ciao, vorrei informazioni sugli appartamenti di Laveno Lake House`} className="phone-number" target="_blank" rel="noopener noreferrer">
             {formatPhone(primaryPhone)}
           </a>
         </div>
@@ -80,7 +80,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           </span>
           <div>
           <div className="contact-label">WhatsApp:</div>
-            <a href={`tel:${secondaryPhone}`} className="contact-link">
+            <a href={`https://wa.me/${secondaryPhone.replace(/\D/g, '')}?text=Ciao, vorrei informazioni sugli appartamenti di Laveno Lake House`} className="phone-number" target="_blank" rel="noopener noreferrer">
               {formatPhone(secondaryPhone)}
             </a>
           </div>
