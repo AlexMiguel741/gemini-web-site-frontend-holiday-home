@@ -12,6 +12,8 @@ import FloatingWhatsApp from './components/FloatingWhatsApp';
 import ContactForm from './components/ContactForm';
 import CookieBanner from './components/CookieBanner';
 import { loadGoogleAnalytics } from './utils/analytics';
+import SEOHead from './components/SEOHead';
+import SchemaMarkup from './components/SchemaMarkup';
 
 type View = 'home' | 'story' | 'property';
 
@@ -329,6 +331,115 @@ const App: React.FC = () => {
 
   const selectedApartment = APARTMENTS.find(a => a.id === selectedAptId);
 
+  // SEO Data - Trilingual titles and descriptions
+  const seoData = {
+    home: {
+      it: {
+        title: 'Laveno Lake House | Appartamenti Vacanze Lago Maggiore',
+        description: 'Appartamenti vacanze a Laveno Mombello sul Lago Maggiore. Moderni, arredati, parcheggio incluso. Prenota diretto da €80/notte e risparmia le commissioni.',
+        image: '/images/azure/foto_sala_1.png'
+      },
+      en: {
+        title: 'Laveno Lake House | Holiday Apartments Lake Maggiore Italy',
+        description: 'Vacation apartments in Laveno Mombello on Lake Maggiore. Modern, fully furnished, free parking. Book direct from €80/night and save on fees.',
+        image: '/images/azure/foto_sala_1.png'
+      },
+      de: {
+        title: 'Laveno Lake House | Ferienwohnungen Lago Maggiore Italien',
+        description: 'Ferienwohnungen in Laveno Mombello am Lago Maggiore. Modern, mobliert, kostenloser Parkplatz. Direkt buchen ab €80/Nacht.',
+        image: '/images/azure/foto_sala_1.png'
+      }
+    },
+    apartments: {
+      'azure-terrace-suite': {
+        it: {
+          title: 'Il Blu di Laveno | Appartamento Vacanze Laveno Mombello | Da €90/notte',
+          description: 'Appartamento moderno 65mq nel cuore di Laveno Centro. WiFi, parcheggio gratuito, fino a 3 ospiti. A pochi minuti dal Lago Maggiore. Prenota diretto.'
+        },
+        en: {
+          title: 'Il Blu di Laveno | Vacation Apartment Lake Maggiore | From €90/night',
+          description: 'Modern 65sqm apartment in Laveno Centro. Free WiFi, free parking, up to 3 guests. Minutes from Lake Maggiore. Book direct and save.'
+        },
+        de: {
+          title: 'Il Blu di Laveno | Ferienwohnung Lago Maggiore | Ab €90/Nacht',
+          description: 'Moderne 65qm Ferienwohnung im Herzen von Laveno. WLAN, kostenloser Parkplatz, bis zu 3 Gaste. Wenige Minuten vom Lago Maggiore.'
+        }
+      },
+      'sapphire-studio-loft': {
+        it: {
+          title: 'Verso il Lago | Casa Vacanze Laveno Mombello | Da €90/notte',
+          description: 'Appartamento vacanze 45mq a due passi dal centro di Laveno. Cucina attrezzata, lenzuola incluse, posizione perfetta sul Lago Maggiore.'
+        },
+        en: {
+          title: 'Verso il Lago | Holiday Home Laveno Lake Maggiore | From €90/night',
+          description: '45sqm holiday apartment steps from Laveno center. Fully equipped kitchen, linens included. Perfect location on Lake Maggiore.'
+        },
+        de: {
+          title: 'Verso il Lago | Ferienwohnung Laveno Lago Maggiore | Ab €90/Nacht',
+          description: '45qm Ferienwohnung, wenige Schritte vom Zentrum Lavenos. Voll ausgestattete Kuche, Bettwäsche inklusive. Perfekte Lage am Lago Maggiore.'
+        }
+      },
+      'cobalt-family-home': {
+        it: {
+          title: 'Le Cascate 1 | Appartamento Cittiglio Lago Maggiore | Da €85/notte',
+          description: 'Appartamento 45mq nel borgo storico di Cittiglio, vicino alle cascate. Tranquillo, moderno, a 10 minuti dal Lago Maggiore. Ideale per famiglie.'
+        },
+        en: {
+          title: 'Le Cascate 1 | Apartment Cittiglio Lake Maggiore | From €85/night',
+          description: '45sqm apartment in Cittiglio historic village near the waterfalls. Quiet, modern, 10 minutes from Lake Maggiore. Ideal for families.'
+        },
+        de: {
+          title: 'Le Cascate 1 | Apartment Cittiglio Lago Maggiore | Ab €85/Nacht',
+          description: '45qm Apartment im historischen Dorf Cittiglio, nahe den Wasserfallen. Ruhig, modern, 10 Minuten vom Lago Maggiore. Ideal fur Familien.'
+        }
+      },
+      'navy-garden-retreat': {
+        it: {
+          title: 'Le Cascate | Affitto Breve Cittiglio Lago Maggiore | Da €80/notte',
+          description: 'Appartamento vacanze nel centro storico di Cittiglio. 45mq, moderno e arredato, a pochi minuti dal Lago Maggiore. Da €80/notte.'
+        },
+        en: {
+          title: 'Le Cascate | Short Term Rental Cittiglio Lake Maggiore | From €80/night',
+          description: 'Holiday apartment in Cittiglio historic center. 45sqm, modern and furnished, minutes from Lake Maggiore. From €80/night.'
+        },
+        de: {
+          title: 'Le Cascate | Kurzzeitmiete Cittiglio Lago Maggiore | Ab €80/Nacht',
+          description: 'Ferienwohnung im historischen Zentrum von Cittiglio. 45qm, modern und mobliert, wenige Minuten vom Lago Maggiore. Ab €80/Nacht.'
+        }
+      }
+    }
+  };
+
+  // Get current SEO data based on view and language
+  const getCurrentSEO = () => {
+    if (view === 'home') {
+      return {
+        title: seoData.home[lang].title,
+        description: seoData.home[lang].description,
+        image: seoData.home[lang].image,
+        url: `https://www.lavenolakehouse.com${lang !== 'it' ? '/' + lang : ''}/`
+      };
+    } else if (view === 'property' && selectedAptId) {
+      const aptSeo = seoData.apartments[selectedAptId];
+      if (aptSeo && aptSeo[lang]) {
+        return {
+          title: aptSeo[lang].title,
+          description: aptSeo[lang].description,
+          image: selectedApartment?.images?.[0] || '/images/azure/foto_sala_1.png',
+          url: `https://www.lavenolakehouse.com${lang !== 'it' ? '/' + lang : ''}/appartamenti/${selectedAptId}`
+        };
+      }
+    }
+    return {
+      title: 'Laveno Lake House',
+      description: 'Appartamenti vacanze al Lago Maggiore',
+      image: '/images/azure/foto_sala_1.png',
+      url: 'https://www.lavenolakehouse.com'
+    };
+  };
+
+  const currentSEO = getCurrentSEO();
+
   const formatPriceFull = (price: number) => {
     const formatter = new Intl.NumberFormat(lang === 'it' ? 'it-IT' : lang === 'de' ? 'de-DE' : 'en-GB', {
       style: 'currency',
@@ -373,6 +484,20 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-white overflow-x-hidden relative">
+      {/* SEO Components */}
+      <SEOHead 
+        title={currentSEO.title}
+        description={currentSEO.description}
+        image={currentSEO.image}
+        url={currentSEO.url}
+        lang={lang}
+      />
+      <SchemaMarkup 
+        page={view === 'home' ? 'home' : selectedAptId}
+        apartment={selectedApartment}
+        lang={lang}
+      />
+
       <header className="sticky top-0 z-[100] bg-white/95 backdrop-blur-xl border-b border-slate-100 h-32 sm:h-40 flex items-center">
         <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
           <div onClick={() => navigateTo('home')} className="cursor-pointer group flex items-center">
