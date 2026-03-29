@@ -4,18 +4,19 @@ import { APARTMENTS, SITE_CONFIG, STORY_CONTENT, HERO_SECTION, UI_LABELS, DISTAN
 import ContactInfo from './components/ContactInfo';
 import { Apartment, Language } from './types';
 import ApartmentCard from './components/ApartmentCard';
-import { fetchAndParseIcal, BookedRange } from './services/icalService';
+import { fetchBookings, getCachedBookings } from './src/services/icalService.js';
 import Footer from './components/Footer';
 import SmartImage from './components/SmartImage';
 import CalendarDebugPanel from './components/CalendarDebugPanel';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import ContactForm from './components/ContactForm';
-import CookieBanner from './components/CookieBanner';
-import { loadGoogleAnalytics } from './utils/analytics';
-import SEOHead from './components/SEOHead';
-import SchemaMarkup from './components/SchemaMarkup';
+import CookieBanner from './components/CookieBanner.jsx';
+import { loadGoogleAnalytics } from './utils/analytics.js';
+import SEOHead from './components/SEOHead.jsx';
+import SchemaMarkup from './components/SchemaMarkup.jsx';
 
 type View = 'home' | 'story' | 'property';
+type BookedRange = { start: Date; end: Date };
 
 
 
@@ -151,53 +152,31 @@ const AvailabilityCalendar: React.FC<{ apartment: Apartment; lang: Language }> =
   const [syncError, setSyncError] = useState(false);
 
   useEffect(() => {
-    let retryTimeout: NodeJS.Timeout | null = null;
-    let isMounted = true;
-
-    const sync = async () => {
-      if (!apartment.icalUrl) {
-        console.warn('⚠️ No iCal URL configured for', apartment.name.en);
-        return;
-      }
-      console.log(`🔵 [Calendar] useEffect triggered for apartment ID: ${apartment.id}, URL: ${apartment.icalUrl.substring(0, 60)}...`);
-      setIsSyncing(true);
+    if (!apartment.icalUrl) return;
+    const controller = new AbortController();
+    let cancelled = false;
+    const cached = getCachedBookings(apartment.icalUrl);
+    if (cached && !cancelled) {
+      setRealBookings(cached);
       setSyncError(false);
-      
-      try {
-        const bookings = await fetchAndParseIcal(apartment.icalUrl);
-        console.log(`🟢 [Calendar] Fetch completed for ${apartment.id}: ${bookings.length} bookings`);
-        if (isMounted) {
+    }
+    setIsSyncing(!cached);
+    fetchBookings(apartment.icalUrl, controller.signal)
+      .then(bookings => {
+        if (!cancelled) {
           setRealBookings(bookings);
           setSyncError(false);
-          
-          // Log parsed bookings for debugging
-          if (bookings.length > 0) {
-            console.log(`✅ Calendar loaded: ${bookings.length} bookings`);
-            bookings.slice(0, 3).forEach((b, i) => {
-              console.log(`  ${i + 1}. ${b.start.toISOString().split('T')[0]} to ${b.end.toISOString().split('T')[0]}`);
-            });
-            if (bookings.length > 3) console.log(`  ... and ${bookings.length - 3} more`);
-          } else {
-            console.log('ℹ️ No bookings found in calendar');
-          }
+          setIsSyncing(false);
         }
-      } catch (error) {
-        if (isMounted) {
-          setSyncError(true);
-          console.error('❌ Calendar sync error:', (error as Error).message);
-          // Retry dopo 5 secondi
-          retryTimeout = setTimeout(sync, 5000);
-        }
-      } finally {
-        if (isMounted) setIsSyncing(false);
-      }
-    };
-
-    sync();
-
+      })
+      .catch(err => {
+        if (cancelled || err.name === 'AbortError') return;
+        setIsSyncing(false);
+        if (!cached) setSyncError(true);
+      });
     return () => {
-      isMounted = false;
-      if (retryTimeout) clearTimeout(retryTimeout);
+      cancelled = true;
+      controller.abort();
     };
   }, [apartment.id, apartment.icalUrl]);
 
