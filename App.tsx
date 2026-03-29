@@ -16,12 +16,65 @@ type View = 'home' | 'story' | 'property';
 
 const Lightbox: React.FC<{ images: string[]; isOpen: boolean; onClose: () => void; startIndex?: number; lang: Language }> = ({ images, isOpen, onClose, startIndex = 0, lang }) => {
   const [currentIndex, setCurrentIndex] = useState(startIndex);
+  const touchStartX = useRef(0);
 
+  // Handle image navigation
+  const goToPrevious = () => {
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+  };
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+  };
+
+  // Manage background scroll
   useEffect(() => {
     setCurrentIndex(startIndex);
     if (isOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'unset';
   }, [isOpen, startIndex]);
+
+  // Keyboard navigation: Arrow keys + Escape
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goToNext();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goToPrevious();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Touch swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const swipeDistance = touchStartX.current - touchEndX;
+
+    // Minimum swipe distance of 50px
+    if (Math.abs(swipeDistance) > 50) {
+      if (swipeDistance > 0) {
+        // Swiped left → next image
+        goToNext();
+      } else {
+        // Swiped right → previous image
+        goToPrevious();
+      }
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -42,13 +95,17 @@ const Lightbox: React.FC<{ images: string[]; isOpen: boolean; onClose: () => voi
       
       <div className="flex-1 relative flex items-center justify-center bg-slate-50 overflow-hidden">
         <button 
-          onClick={() => setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
+          onClick={goToPrevious}
           className="absolute left-2 sm:left-4 z-10 p-3 sm:p-4 bg-white/90 backdrop-blur rounded-full shadow-lg hover:bg-white transition-all active:scale-90"
         >
           <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeWidth={2.5}/></svg>
         </button>
         
-        <div className="w-full h-full flex items-center justify-center p-4">
+        <div 
+          className="w-full h-full flex items-center justify-center p-4"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <img 
             src={images[currentIndex]} 
             className="max-w-full max-h-full object-contain rounded-xl sm:rounded-2xl shadow-2xl" 
@@ -57,7 +114,7 @@ const Lightbox: React.FC<{ images: string[]; isOpen: boolean; onClose: () => voi
         </div>
 
         <button 
-          onClick={() => setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
+          onClick={goToNext}
           className="absolute right-2 sm:right-4 z-10 p-3 sm:p-4 bg-white/90 backdrop-blur rounded-full shadow-lg hover:bg-white transition-all active:scale-90"
         >
           <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeWidth={2.5}/></svg>
