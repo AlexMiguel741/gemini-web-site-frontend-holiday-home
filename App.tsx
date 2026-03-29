@@ -8,6 +8,7 @@ import { fetchAndParseIcal, BookedRange } from './services/icalService';
 import Footer from './components/Footer';
 import SmartImage from './components/SmartImage';
 import CalendarDebugPanel from './components/CalendarDebugPanel';
+import FloatingWhatsApp from './components/FloatingWhatsApp';
 
 type View = 'home' | 'story' | 'property';
 
@@ -637,6 +638,13 @@ const App: React.FC = () => {
 
       <Footer />
       
+      <FloatingWhatsApp
+        phone={SITE_CONFIG.whatsapp}
+        hostName={SITE_CONFIG.hostName}
+        apartmentName={selectedApartment?.name[lang] || ''}
+        lang={lang}
+      />
+
       {import.meta.env.DEV && <CalendarDebugPanel />}
     </div>
   );

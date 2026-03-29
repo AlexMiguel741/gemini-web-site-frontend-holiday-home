@@ -178,7 +178,15 @@ export const UI_LABELS: Translations = {
   distances_title: { it: 'Distanze da Laveno', en: 'Laveno Distances', de: 'Wo Wir Sind' },
   distances_subtitle: { it: 'Perfetta posizione per esplorare la regione', en: 'Perfect location to explore the region', de: 'Perfekte Lage um die Region zu erkunden' }
 };
-
+export const FLOATING_WHATSAPP = {
+  title: { it: 'Prenota via WhatsApp', en: 'Book via WhatsApp', de: 'Über WhatsApp buchen' },
+  apartment_label: { it: 'Nome Appartamento', en: 'Apartment Name', de: 'Wohnungsname' },
+  apartment_placeholder: { it: 'Es. Il Blu di Laveno', en: 'E.g. Laveno Blue', de: 'Z.B. Laveno Blau' },
+  check_in_label: { it: 'Check-in', en: 'Check-in', de: 'Check-in' },
+  check_out_label: { it: 'Check-out', en: 'Check-out', de: 'Check-out' },
+  send_button: { it: 'Invia messaggio', en: 'Send Message', de: 'Nachricht senden' },
+  close_button: { it: 'Chiudi', en: 'Close', de: 'Schließen' }
+};
 export const DISTANCES = {
   it: [
     { place: 'Varese', distance: '15 km', time: '20 min', icon: '🏙️' },
