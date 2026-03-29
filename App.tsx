@@ -10,6 +10,8 @@ import SmartImage from './components/SmartImage';
 import CalendarDebugPanel from './components/CalendarDebugPanel';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import ContactForm from './components/ContactForm';
+import CookieBanner from './components/CookieBanner';
+import { loadGoogleAnalytics } from './utils/analytics';
 
 type View = 'home' | 'story' | 'property';
 
@@ -316,6 +318,12 @@ const App: React.FC = () => {
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.playbackRate = 1.75;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (localStorage.getItem('cookie_consent') === 'accepted') {
+      loadGoogleAnalytics();
     }
   }, []);
 
@@ -703,6 +711,11 @@ const App: React.FC = () => {
         hostName={SITE_CONFIG.hostName}
         apartmentName={selectedApartment?.name[lang] || ''}
         lang={lang}
+      />
+
+      <CookieBanner 
+        lang={lang} 
+        onAccept={loadGoogleAnalytics} 
       />
 
       {import.meta.env.DEV && <CalendarDebugPanel />}
