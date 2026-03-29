@@ -115,7 +115,11 @@ const Lightbox: React.FC<{ images: string[]; isOpen: boolean; onClose: () => voi
           <img 
             src={images[currentIndex]} 
             className="max-w-full max-h-full object-contain rounded-xl sm:rounded-2xl shadow-2xl" 
-            alt={`Foto ${currentIndex + 1}`} 
+            alt={`Foto ${currentIndex + 1}`}
+            loading="eager"
+            decoding="async"
+            width={1200}
+            height={900}
           />
         </div>
 
@@ -134,7 +138,15 @@ const Lightbox: React.FC<{ images: string[]; isOpen: boolean; onClose: () => voi
             onClick={() => setCurrentIndex(idx)}
             className={`w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${currentIndex === idx ? 'border-blue-700 scale-105 shadow-md' : 'border-transparent opacity-40 hover:opacity-100'}`}
           >
-            <img src={img} className="w-full h-full object-cover" alt="" />
+            <img 
+              src={img} 
+              className="w-full h-full object-cover" 
+              alt="" 
+              loading="lazy"
+              decoding="async"
+              width={64}
+              height={64}
+            />
           </button>
         ))}
       </div>
@@ -454,7 +466,15 @@ const App: React.FC = () => {
           onClick={() => setLang(l)}
           className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all ${lang === l ? 'bg-white text-blue-700 shadow-md scale-105' : 'text-slate-400 hover:text-slate-600'}`}
         >
-          <img src={`https://flagcdn.com/w40/${l === 'en' ? 'gb' : l}.png`} alt={l} className="w-4 h-auto rounded-sm" />
+          <img 
+            src={`https://flagcdn.com/w40/${l === 'en' ? 'gb' : l}.png`} 
+            alt={l} 
+            className="w-4 h-auto rounded-sm"
+            loading="lazy"
+            decoding="async"
+            width={40}
+            height={30}
+          />
           <span className="hidden xs:inline">{l}</span>
         </button>
       ))}
@@ -521,10 +541,19 @@ const App: React.FC = () => {
                 loop
                 muted
                 playsInline
+                preload="none"
               >
                 <source src="/videos/lake-maggiore.mp4" type="video/mp4" />
                 {/* Fallback image if video doesn't load */}
-                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&q=80&w=1200" alt="Lake Maggiore" className="w-full h-full object-cover" />
+                <img 
+                  src="/images/azure/foto_sala_1.png" 
+                  alt="Lake Maggiore" 
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                  width={1200}
+                  height={800}
+                />
               </video>
 
               {/* Overlay for better text readability */}

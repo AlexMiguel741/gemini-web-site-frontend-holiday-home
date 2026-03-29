@@ -35,6 +35,10 @@ const ApartmentCard: React.FC<ApartmentCardProps> = ({ apartment, lang, onSelect
           alt={apartment.name[lang]}
           onError={handleImageError}
           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+          loading="lazy"
+          decoding="async"
+          width={400}
+          height={300}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 sm:group-hover:opacity-100 transition-opacity duration-500"></div>
         
