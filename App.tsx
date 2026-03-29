@@ -9,6 +9,7 @@ import Footer from './components/Footer';
 import SmartImage from './components/SmartImage';
 import CalendarDebugPanel from './components/CalendarDebugPanel';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
+import ContactForm from './components/ContactForm';
 
 type View = 'home' | 'story' | 'property';
 
@@ -498,6 +499,8 @@ const App: React.FC = () => {
                 </div>
               </div>
             </section>
+
+            <ContactForm lang={lang} />
           </div>
         )}
 

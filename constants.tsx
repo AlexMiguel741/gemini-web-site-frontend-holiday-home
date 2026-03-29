@@ -176,7 +176,30 @@ export const UI_LABELS: Translations = {
     de: "Für Direktbuchungen, Gruppen oder Langzeitaufenthalte kontaktieren Sie uns direkt:" 
   },
   distances_title: { it: 'Distanze da Laveno', en: 'Laveno Distances', de: 'Wo Wir Sind' },
-  distances_subtitle: { it: 'Perfetta posizione per esplorare la regione', en: 'Perfect location to explore the region', de: 'Perfekte Lage um die Region zu erkunden' }
+  distances_subtitle: { it: 'Perfetta posizione per esplorare la regione', en: 'Perfect location to explore the region', de: 'Perfekte Lage um die Region zu erkunden' },
+  // ContactForm translations
+  contact_form_title: { it: 'Prenota Diretto', en: 'Book Direct', de: 'Direkt Buchen' },
+  contact_form_subtitle: { it: 'Rispondiamo entro 24 ore', en: 'We reply within 24 hours', de: 'Wir antworten innerhalb von 24 Stunden' },
+  contact_form_best_price: { it: 'Miglior prezzo garantito', en: 'Best price guaranteed', de: 'Bester Preis garantiert' },
+  contact_form_secure: { it: 'Prenotazione sicura', en: 'Secure booking', de: 'Sichere Buchung' },
+  contact_form_response: { it: 'Risposta in 24 ore', en: 'Response in 24 hours', de: 'Antwort in 24 Stunden' },
+  contact_form_whatsapp: { it: 'Contattaci su WhatsApp', en: 'Contact us on WhatsApp', de: 'Kontaktieren Sie uns auf WhatsApp' },
+  contact_form_name: { it: 'Nome', en: 'Name', de: 'Name' },
+  contact_form_email: { it: 'Email', en: 'Email', de: 'E-Mail' },
+  contact_form_phone: { it: 'Telefono', en: 'Phone', de: 'Telefon' },
+  contact_form_apartment: { it: 'Appartamento', en: 'Apartment', de: 'Wohnung' },
+  contact_form_apartment_placeholder: { it: 'Seleziona appartamento', en: 'Select apartment', de: 'Wohnung wählen' },
+  contact_form_checkin: { it: 'Check-in', en: 'Check-in', de: 'Check-in' },
+  contact_form_checkout: { it: 'Check-out', en: 'Check-out', de: 'Check-out' },
+  contact_form_guests: { it: 'Numero ospiti', en: 'Number of guests', de: 'Anzahl der Gäste' },
+  contact_form_message: { it: 'Messaggio', en: 'Message', de: 'Nachricht' },
+  contact_form_submit: { it: 'Invia Richiesta', en: 'Send Request', de: 'Anfrage Senden' },
+  contact_form_sending: { it: 'Invio in corso...', en: 'Sending...', de: 'Wird gesendet...' },
+  contact_form_success: { it: 'Richiesta inviata!', en: 'Request sent!', de: 'Anfrage gesendet!' },
+  contact_form_success_msg: { it: 'Ti risponderemo entro 24 ore.', en: 'We will reply within 24 hours.', de: 'Wir werden innerhalb von 24 Stunden antworten.' },
+  contact_form_error_submit: { it: 'Errore nell\'invio della richiesta. Riprova più tardi.', en: 'Error sending request. Try again later.', de: 'Fehler beim Senden der Anfrage. Versuchen Sie es später erneut.' },
+  contact_form_error_connection: { it: 'Errore di connessione. Riprova più tardi.', en: 'Connection error. Try again later.', de: 'Verbindungsfehler. Versuchen Sie es später erneut.' },
+  contact_form_required: { it: 'Obbligatorio', en: 'Required', de: 'Erforderlich' }
 };
 export const FLOATING_WHATSAPP = {
   title: { it: 'Prenota via WhatsApp', en: 'Book via WhatsApp', de: 'Über WhatsApp buchen' },
